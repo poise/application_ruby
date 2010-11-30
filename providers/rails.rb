@@ -37,9 +37,16 @@ action :before_deploy do
 
   new_resource.environment['RAILS_ENV'] = new_resource.environment_name
 
-  new_resource.gems.each do |gem, ver|
+  new_resource.gems.each do |gem, opt|
+    if opt.is_a?(Hash)
+      ver = opt['version']
+      src = opt['source']
+    elsif opt.is_a?(String)
+      ver = opt
+    end
     gem_package gem do
       action :install
+      source src if src
       version ver if ver && ver.length > 0
     end
   end
