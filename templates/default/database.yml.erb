@@ -1,0 +1,8 @@
+<%= @rails_env %>:
+  adapter: <%= @database['adapter'] %>
+  host: <%= @host %>
+  database: <%= @database['database'] %>
+  username: <%= @database['username'] %>
+  password: <%= @database['password'] %>
+  encoding: <%= @database.has_key?('encoding') ? @database['encoding'] : 'utf8' %>
+  reconnect: true
