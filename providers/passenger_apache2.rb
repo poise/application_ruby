@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+include Chef::Mixin::LanguageIncludeRecipe
+
 action :before_compile do
 
   include_recipe "apache2"
