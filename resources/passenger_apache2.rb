@@ -21,3 +21,4 @@ include Chef::Resource::ApplicationBase
 
 attribute :server_aliases, :kind_of => [Array, NilClass], :default => nil
 attribute :webapp_template, :kind_of => [String, NilClass], :default => nil
+attribute :params, :kind_of => [Hash, NilClass], :default => nil

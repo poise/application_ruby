@@ -49,6 +49,7 @@ action :before_deploy do
     server_aliases new_resource.server_aliases
     log_dir node['apache']['log_dir']
     rails_env new_resource.application.environment_name
+    extra new_resource.params
   end
 
   apache_site "000-default" do
