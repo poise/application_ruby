@@ -153,9 +153,9 @@ action :before_symlink do
 
   ruby_block "remove_run_migrations" do
     block do
-      if node.role?("#{new_resource.id}_run_migrations")
-        Chef::Log.info("Migrations were run, removing role[#{new_resource.id}_run_migrations]")
-        node.run_list.remove("role[#{new_resource.id}_run_migrations]")
+      if node.role?("#{new_resource.name}_run_migrations")
+        Chef::Log.info("Migrations were run, removing role[#{new_resource.name}_run_migrations]")
+        node.run_list.remove("role[#{new_resource.name}_run_migrations]")
       end
     end
   end
