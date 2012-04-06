@@ -19,7 +19,7 @@
 #
 
 action :before_compile do
-  new_resource.restart_command "/etc/init.d/#{new_resource.id} hup" if !new_resource.restart_command
+  new_resource.restart_command "/etc/init.d/#{new_resource.name} hup" if !new_resource.restart_command
 end
 
 action :before_deploy do
@@ -35,7 +35,7 @@ action :before_restart do
 
   new_resource = @new_resource
 
-  unicorn_config "/etc/unicorn/#{new_resource.id}.rb" do
+  unicorn_config "/etc/unicorn/#{new_resource.name}.rb" do
     listen({ new_resource.port => new_resource.options })
     working_directory ::File.join(new_resource.path, 'current')
     worker_timeout new_resource.worker_timeout
@@ -44,7 +44,7 @@ action :before_restart do
     before_fork new_resource.before_fork
   end
 
-  runit_service new_resource.id do
+  runit_service new_resource.name do
     template_name 'unicorn'
     cookbook 'application_rails'
     options(
