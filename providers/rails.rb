@@ -118,7 +118,7 @@ action :before_migrate do
       # Check for a Gemfile.lock
       bundler_deployment = ::File.exists?(::File.join(new_resource.release_path, "Gemfile.lock"))
     end
-    execute "bundle install #{bundler_deployment ? "--deployment " : ""}--without #{(common_groups -([node.chef_environment])).join(' ')}" do
+    execute "bundle install #{bundler_deployment ? "--deployment " : ""}--without #{(common_groups -([new_resource.environment_name])).join(' ')}" do
       ignore_failure true
       cwd new_resource.release_path
     end
