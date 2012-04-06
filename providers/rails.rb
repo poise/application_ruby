@@ -23,12 +23,12 @@ action :before_compile do
   new_resource.migration_command "rake db:migrate" if !new_resource.migration_command
 
   new_resource.environment.update({
-    "RAILS_ENV" => new_resource.environment_name,
+    "RAILS_ENV" => new_resource.environment_name
   })
 
   new_resource.symlink_before_migrate.update({
     "database.yml" => "config/database.yml",
-    "memcached.yml" => "config/memcached.yml",
+    "memcached.yml" => "config/memcached.yml"
   })
 
 end
