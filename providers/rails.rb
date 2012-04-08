@@ -50,8 +50,8 @@ action :before_deploy do
     # Assuming we have one...
     if dbm
       template "#{new_resource.path}/shared/database.yml" do
-        source "database.yml.erb"
-        cookbook "application_rails"
+        source new_resource.database_template || "database.yml.erb"
+        cookbook new_resource.database_template ? new_resource.cookbook_name : "application_rails"
         owner new_resource.owner
         group new_resource.group
         mode "644"
