@@ -45,18 +45,7 @@ action :before_deploy do
   end
 
   if new_resource.database_master_role
-    dbm = nil
-    # If we are the database master
-    if node['roles'].include?(new_resource.database_master_role)
-      dbm = node
-    else
-    # Find the database master
-      results = search(:node, "role:#{new_resource.database_master_role} AND chef_environment:#{node.chef_environment}", nil, 0, 1)
-      rows = results[0]
-      if rows.length == 1
-        dbm = rows[0]
-      end
-    end
+    dbm = new_resource.find_matching_role(new_resource.database_master_role)
 
     # Assuming we have one...
     if dbm
@@ -73,7 +62,7 @@ action :before_deploy do
         )
       end
     else
-      Chef::Log.warn("No node with role #{new_resource.database_master_role}, database.yml not rendered!")
+      Chef::Log.warn("No node with role #{new_resource.database_master_role}")
     end
   end
 
