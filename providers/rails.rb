@@ -119,13 +119,6 @@ action :before_migrate do
       cwd new_resource.release_path
       user new_resource.owner
     end
-  elsif gem_names.include?('bundler08')
-    Chef::Log.info "Running gem bundle"
-    execute "gem bundle" do
-      ignore_failure true
-      cwd new_resource.release_path
-      user new_resource.owner
-    end
   else
     # chef runs before_migrate, then symlink_before_migrate symlinks, then migrations,
     # yet our before_migrate needs database.yml to exist (and must complete before
