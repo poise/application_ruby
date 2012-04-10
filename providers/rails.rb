@@ -117,12 +117,14 @@ action :before_migrate do
     execute "bundle install #{bundler_deployment ? "--deployment " : ""}--without #{(common_groups -([new_resource.environment_name])).join(' ')}" do
       ignore_failure true
       cwd new_resource.release_path
+      user new_resource.owner
     end
   elsif gem_names.include?('bundler08')
     Chef::Log.info "Running gem bundle"
     execute "gem bundle" do
       ignore_failure true
       cwd new_resource.release_path
+      user new_resource.owner
     end
   else
     # chef runs before_migrate, then symlink_before_migrate symlinks, then migrations,
@@ -134,6 +136,7 @@ action :before_migrate do
     execute "(ln -s ../../../shared/database.yml config/database.yml && rake gems:install); rm config/database.yml" do
       ignore_failure true
       cwd new_resource.release_path
+      user new_resource.owner
     end
   end
 
