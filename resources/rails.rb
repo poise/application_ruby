@@ -25,6 +25,7 @@ attribute :database_master_role, :kind_of => [String, NilClass], :default => nil
 attribute :database_template, :kind_of => [String, NilClass], :default => nil
 attribute :memcached_role, :kind_of => [String, NilClass], :default => nil
 attribute :gems, :kind_of => [Array, Hash], :default => []
+attribute :bundler, :kind_of => [NilClass, TrueClass, FalseClass], :default => nil
 attribute :bundler_deployment, :kind_of => [NilClass, TrueClass, FalseClass], :default => nil
 
 def database(*args, &block)

@@ -20,7 +20,15 @@
 
 action :before_compile do
 
-  new_resource.migration_command "rake db:migrate" if !new_resource.migration_command
+  if new_resource.bundler.nil?
+    new_resource.bundler new_resource.gems.any? { |gem, ver| gem == 'bundler' }
+  end
+
+  unless new_resource.migration_command
+    command = "rake db:migrate"
+    command = "bundle exec #{command}" if new_resource.bundler
+    new_resource.migration_command command
+  end
 
   new_resource.environment.update({
     "RAILS_ENV" => new_resource.environment_name
@@ -97,8 +105,7 @@ end
 
 action :before_migrate do
 
-  gem_names = new_resource.gems.map{|gem, ver| gem}
-  if gem_names.include?('bundler')
+  if new_resource.bundler
     Chef::Log.info "Running bundle install"
     directory "#{new_resource.path}/shared/vendor_bundle" do
       owner new_resource.owner
@@ -133,6 +140,7 @@ action :before_migrate do
     end
   end
 
+  gem_names = new_resource.gems.map { |gem, ver| gem }
   if new_resource.migration_command.include?('rake') && !gem_names.include?('rake')
     gem_package "rake" do
       action :install
