@@ -46,63 +46,12 @@ action :before_deploy do
 
   new_resource.environment['RAILS_ENV'] = new_resource.environment_name
 
-  new_resource.gems.each do |gem, opt|
-    if opt.is_a?(Hash)
-      ver = opt['version']
-      src = opt['source']
-    elsif opt.is_a?(String)
-      ver = opt
-    end
-    gem_package gem do
-      action :install
-      source src if src
-      version ver if ver && ver.length > 0
-    end
-  end
+  install_gems
 
-  dbm = new_resource.find_matching_role(new_resource.database_master_role)
-  Chef::Log.warn("No node with role #{new_resource.database_master_role}") if new_resource.database_master_role && !dbm
-
-  host = case
-    when new_resource.database.has_key?('host')
-      new_resource.database['host']
-    when dbm && dbm.attribute?('cloud')
-      dbm['cloud']['local_ipv4']
-    when dbm
-      dbm['ipaddress']
-    end
-
-  template "#{new_resource.path}/shared/database.yml" do
-    source new_resource.database_template || "database.yml.erb"
-    cookbook new_resource.database_template ? new_resource.cookbook_name : "application_rails"
-    owner new_resource.owner
-    group new_resource.group
-    mode "644"
-    variables(
-      :host => host,
-      :database => new_resource.database,
-      :rails_env => new_resource.environment_name
-    )
-  end
+  create_database_yml
 
   if new_resource.memcached_role
-    results = search(:node, "role:#{new_resource.memcached_role} AND chef_environment:#{node.chef_environment} NOT hostname:#{node[:hostname]}")
-    if results.length == 0
-      if node['roles'].include?(new_resource.memcached_role)
-        results << node
-      end
-    end
-    template "#{new_resource.path}/shared/memcached.yml" do
-      source "memcached.yml.erb"
-      cookbook "application_rails"
-      owner new_resource.owner
-      group new_resource.group
-      mode "644"
-      variables(
-        :memcached_envs => new_resource.memcached,
-        :hosts => results.sort_by { |r| r.name }
-      )
-    end
+    create_memcached_yml
   end
 
 end
@@ -174,3 +123,68 @@ end
 action :after_restart do
 end
 
+
+protected
+
+def install_gems
+  new_resource.gems.each do |gem, opt|
+    if opt.is_a?(Hash)
+      ver = opt['version']
+      src = opt['source']
+    elsif opt.is_a?(String)
+      ver = opt
+    end
+    gem_package gem do
+      action :install
+      source src if src
+      version ver if ver && ver.length > 0
+    end
+  end
+end
+
+def create_database_yml
+  dbm = new_resource.find_matching_role(new_resource.database_master_role)
+  Chef::Log.warn("No node with role #{new_resource.database_master_role}") if new_resource.database_master_role && !dbm
+
+  host = case
+    when new_resource.database.has_key?('host')
+      new_resource.database['host']
+    when dbm && dbm.attribute?('cloud')
+      dbm['cloud']['local_ipv4']
+    when dbm
+      dbm['ipaddress']
+    end
+
+  template "#{new_resource.path}/shared/database.yml" do
+    source new_resource.database_template || "database.yml.erb"
+    cookbook new_resource.database_template ? new_resource.cookbook_name : "application_rails"
+    owner new_resource.owner
+    group new_resource.group
+    mode "644"
+    variables(
+      :host => host,
+      :database => new_resource.database,
+      :rails_env => new_resource.environment_name
+    )
+  end
+end
+
+def create_memcached_yml
+  results = search(:node, "role:#{new_resource.memcached_role} AND chef_environment:#{node.chef_environment} NOT hostname:#{node[:hostname]}")
+  if results.length == 0
+    if node['roles'].include?(new_resource.memcached_role)
+      results << node
+    end
+  end
+  template "#{new_resource.path}/shared/memcached.yml" do
+    source "memcached.yml.erb"
+    cookbook "application_rails"
+    owner new_resource.owner
+    group new_resource.group
+    mode "644"
+    variables(
+      :memcached_envs => new_resource.memcached,
+      :hosts => results.sort_by { |r| r.name }
+    )
+  end
+end
