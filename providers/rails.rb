@@ -31,7 +31,8 @@ action :before_compile do
   end
 
   new_resource.environment.update({
-    "RAILS_ENV" => new_resource.environment_name
+    "RAILS_ENV" => new_resource.environment_name,
+    "PATH" => [Gem.default_bindir, ENV['PATH']].join(':')
   })
 
   new_resource.symlink_before_migrate.update({
@@ -125,6 +126,7 @@ action :before_migrate do
       ignore_failure true
       cwd new_resource.release_path
       user new_resource.owner
+      environment new_resource.environment
     end
   else
     # chef runs before_migrate, then symlink_before_migrate symlinks, then migrations,
@@ -137,6 +139,7 @@ action :before_migrate do
       ignore_failure true
       cwd new_resource.release_path
       user new_resource.owner
+      environment new_resource.environment
     end
   end
 
