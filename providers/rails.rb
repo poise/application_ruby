@@ -143,17 +143,7 @@ def install_gems
 end
 
 def create_database_yml
-  dbm = new_resource.find_matching_role(new_resource.database_master_role)
-  Chef::Log.warn("No node with role #{new_resource.database_master_role}") if new_resource.database_master_role && !dbm
-
-  host = case
-    when new_resource.database.has_key?('host')
-      new_resource.database['host']
-    when dbm && dbm.attribute?('cloud')
-      dbm['cloud']['local_ipv4']
-    when dbm
-      dbm['ipaddress']
-    end
+  host = new_resource.find_database_server(new_resource.database_master_role)
 
   template "#{new_resource.path}/shared/database.yml" do
     source new_resource.database_template || "database.yml.erb"
