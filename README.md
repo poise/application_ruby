@@ -1,354 +1,146 @@
-Application cookbook
-====================
+Description
+===========
 
-This cookbook is initially designed to be able to describe and deploy web applications. Currently supported:
+This cookbook is designed to be able to describe and deploy Ruby on Rails web applications. Currently supported:
 
-* Rails
-* Java
-* Django
-* PHP
+* Ruby on Rails
+* Apache 2 with Passenger
+* Unicorn
 
-Other application stacks (Rack, WSGI, etc) will be supported as new recipes at a later date.
+Note that this cookbook provides the Ruby on Rails-specific bindings for the `application` cookbook; you will find general documentation in that cookbook.
 
-This cookbook aims to provide primitives to install/deploy any kind of application driven entirely by data defined in an abstract way through a data bag.
-
-Note that as of version 0.99.10, this cookbook uses Chef 0.10's environments instead of the `app_environment` attribute. If you do not set up any environments for your nodes, they will be in the `_default` environment. See __Usage__ below for information on how to set up environments.
+Other application stacks may be supported at a later date.
 
 Requirements
 ============
 
 Chef 0.10.0 or higher required (for Chef environment use).
 
-The following Opscode cookbooks are dependencies, as this cookbook supports automating a large number of web application stacks.
+The following Opscode cookbooks are dependencies:
 
+* application
+* apache2
+* passenger_apache2
 * runit
 * unicorn
-* passenger_apache2
-* tomcat
-* python
-* gunicorn
-* apache2
-* php
 
-Recipes
-=======
+Resources/Providers
+==========
 
-The application cookbook contains the following recipes.
+The LWRPs provided by this cookbook are not meant to be used by themselves; make sure you are familiar with the `application` cookbook before proceeding.
 
-default
--------
-
-Searches the `apps` data bag and checks that a server role in the app exists on this node, adds the app to the run state and uses the role for the app to locate the recipes that need to be used. The recipes listed in the "type" part of the data bag are included by this recipe, so only the "application" recipe needs to be in the node or role `run_list`.
-
-See below regarding the application data bag structure.
-
-django
+rails
 ------
 
-Using the node's `run_state` that contains the current application in the search, this recipe will:
+The `rails` sub-resource LWRP deals with deploying Ruby on Rails webapps from an SCM repository. It uses the `deploy_revision` LWRP to perform the bulk of its tasks, and many concepts and parameters map directly to it. Check the documentation for `deploy_revision` for more information.
 
-* create an application specific virtualenv
-* install required packages and pips
-* set up the deployment scaffolding
-* creates `settings_local.py` file with the database connection information if required
-* performs a revision-based deploy
+For applications that use Bundler, if a Gemfile.lock is present then gems will be installed with `bundle install --deployment`, which results in gems being installed inside the application directory.
 
-This recipe can be used on nodes that are going to run the application, or on nodes that need to have the application code checkout available such as supporting utility nodes or a configured load balancer that needs static assets stored in the application repository.
+When running Bundler, unnecessary groups will be skipped. The list of groups to skip is determined with this algorithm:
 
-For pip requirements.txt files: ensure the requirements.txt file is present in the root of the application code (APP_ROOT/requirements.txt) or named after the node's current `chef_environment` in a directory named requirements (requirements/production.txt) and `pip install -r` will be run before migrations.
+* start with this Array: `development test cucumber staging production`;
+* the group corresponding to the current environment will be removed from the Array;
+* if the `bundler_without_groups` attribute is set, those groups will be added to the Array.
 
-In order to manage running database migrations (python manage.py migrate), you can use a role that sets the `run_migrations` attribute for the application (`my_app`, below) in the correct environment (production, below). Note the data bag item needs to have migrate set to true. See the data bag example below.
+For example, for a node running in the `production` Chef environment, and given:
 
-    {
-      "name": "my_app_run_migrations",
-      "description": "Run db:migrate on demand for my_app",
-      "json_class": "Chef::Role",
-      "default_attributes": {
-      },
-      "override_attributes": {
-        "apps": {
-          "my_app": {
-            "production": {
-              "run_migrations": true
-            }
-          }
-        }
-      },
-      "chef_type": "role",
-      "run_list": [
-      ]
-    }
+    bundler_without_groups ["mysql"]
 
-Simply apply this role to the node's run list when it is time to run migrations, and the recipe will remove the role when done.  Since Django does not have a standard database migration function built into the core framework, we assume the popular [South framework](http://south.aeracode.org/) is being used.
+Bundler will be run with:
 
-gunicorn
---------
+    bundle install --without development test cucumber staging mysql
 
-Requires `gunicorn` cookbook.
+# Attribute Parameters
 
-Gunicorn is installed, default attributes are set for the node and an app specific gunicorn config and runit service are created.
+- gems: an Array of gems to install
+- bundler: if true, `bundler` will always be used; if false it will never be. Defaults to true if `gems` includes bundler
+- bundler_deployment: if true, Bundler will be run with the `--deployment` options. Defaults to true if a `Gemfile.lock` is present
+- bundler\_without\_groups: an Array of additional Bundler groups to skip
+- database\_master\_role: if a role name is provided, a Chef search will be run to find a node with than role in the same environment as the current role. If a node is found, its IP address will be used when rendering the `database.yml` file, but see the "Database block parameters" section below
+- database\_template: the name of the template that will be rendered to create the `database.yml` file; if specified it will be looked up in the application cookbook. Defaults to "settings.py.erb" from this cookbook
+- database: a block containing additional parameters for configuring the database connection
+- memcached\_role: if a role name is provided, a Chef search will be run to find a node with than role in the same environment as the current role. If a node is found, its IP address will be used when rendering the `memcached.yml` file, but see the "Database block parameters" section below
+- memcached: a block containing additional parameters for configuring the database connection
 
-java_webapp
------------
+# Database and memcached block parameters
 
-Using the node's `run_state` that contains the current application in the search, this recipe will:
-
-* install required packages
-* set up the deployment scaffolding
-* create the context configuration for the servlet container
-* performs a `remote_file` deploy.
-
-The servlet container context configuration (`context.xml`) exposes the following JNDI resources which can be referenced by the webapp's deployment descriptor (web.xml):
-
-* A JDBC datasource for all databases in the node's current `chef_environment`.  The datasource uses the information (including JDBC driver) specified in the data bag item for the application.
-* An Environment entry that matches the node's current `chef_environment` attribute value.  This is useful for loading environment specific properties files in the web application. 
-
-This recipe assumes some sort of build process, such as Maven or a Continuous Integration server like Hudson, will create a deployable artifact and make it available for download via HTTP (such as S3 or artifactory).
-
-mod\_php\_apache2
------------------
-
-Requires `apache2` cookbook. Sets up a mod_php vhost template for the application using the `apache2` cookbook's `web_app` definition. See data bag example below.
+The database and memcached blocks can accept any method, which will result in an entry being created in the `@database` and `@memcached_envs` Hashes which are passed to the respective templates. See Usage below for more information.
 
 passenger\_apache2
 ------------------
 
-Requires `apache2` and `passenger_apache2` cookbooks. Sets up a passenger vhost template for the application using the `apache2` cookbook's `web_app` definition. Use this with the `rails` recipe, in the list of recipes for a specific application type. See data bag example below.
+The `passenger_apache2` sub-resource LWRP configures Apache 2 with Passenger to run the application.
 
-php
----
+# Attribute Parameters
 
-Using the node's `run_state` that contains the current application in the search, this recipe will:
-
-* install required packages and pears/pecls
-* set up the deployment scaffolding
-* creates a `local_settings.php` (specific file name and project path is configurable) file with the database connection information if required
-* performs a revision-based deploy
-
-This recipe can be used on nodes that are going to run the application, or on nodes that need to have the application code checkout available such as supporting utility nodes or a configured load balancer that needs static assets stored in the application repository.
-
-Since PHP projects do not have a standard `local_settings.php` file (or format) that contains database connection information. This recipe assumes you will provide a template in an application specific cookbook.  See additional notes in the 'Application Data Bag' section below.
-
-rails
------
-
-Using the node's `run_state` that contains the current application in the search, this recipe will:
-
-* install required packages and gems
-* set up the deployment scaffolding
-* creates database and memcached configurations if required
-* performs a revision-based deploy.
-
-This recipe can be used on nodes that are going to run the application, or on nodes that need to have the application code checkout available such as supporting utility nodes or a configured load balancer that needs static assets stored in the application repository.
-
-For Gem Bundler: include `bundler` or `bundler08` in the gems list.  `bundle install` or `gem bundle` will be run before migrations.  The `bundle install` command is invoked with the `--deployment` and `--without` flags following [Bundler best practices](http://gembundler.com/deploying.html).
-
-For config.gem in environment: `rake gems:install RAILS_ENV=<node environment>` will be run when a Gem Bundler command is not.
-
-In order to manage running database migrations (rake db:migrate), you can use a role that sets the `run_migrations` attribute for the application (`my_app`, below) in the correct environment (production, below). Note the data bag item needs to have migrate set to true. See the data bag example below.
-
-    {
-      "name": "my_app_run_migrations",
-      "description": "Run db:migrate on demand for my_app",
-      "json_class": "Chef::Role",
-      "default_attributes": {
-      },
-      "override_attributes": {
-        "apps": {
-          "my_app": {
-            "production": {
-              "run_migrations": true
-            }
-          }
-        }
-      },
-      "chef_type": "role",
-      "run_list": [
-      ]
-    }
-
-Simply apply this role to the node's run list when it is time to run migrations, and the recipe will remove the role when done.
-
-tomcat
--------
-
-Requires `tomcat` cookbook.
-
-Tomcat is installed, default attributes are set for the node and the app specific context.xml is symlinked over to Tomcat's context directory as the root context (ROOT.xml).
+- server\_aliases: an Array of server aliases
+- webapp\_template: the template to render to create the virtual host configuration. Defaults to "#{application name}.conf.erb"
+- params: an Hash of extra parameters that will be passed to the template
 
 unicorn
 -------
 
-Requires `unicorn` cookbook.
+The `passenger_apache2` sub-resource LWRP configures Unicorn to run the application.
 
-Unicorn is installed, default attributes are set for the node and an app specific unicorn config and runit service are created.
-
-Deprecated Recipes
-==================
-
-The following recipes are deprecated and have been removed from the cookbook. To retrieve an older version, reference commit 4396ce6.
-
-* `passenger-nginx`
-* `rails_nginx_ree_passenger`
-
-Application Data Bag 
-=====================
-
-The applications data bag expects certain values in order to configure parts of the recipe. Below is a paste of the JSON, where the value is a description of the key. Use your own values, as required. Note that this data bag is also used by the `database` cookbook, so it will contain database information as well. Items that may be ambiguous have an example.
-
-The application used in examples is named `my_app` and the environment is `production`. Most top-level keys are Arrays, and each top-level key has an entry that describes what it is for, followed by the example entries. Entries that are hashes themselves will have the description in the value. In order to use the environment `production` you must create the environment as described below under __Usage__.
-
-Note about "type": the recipes listed in the "type" will be included in the run list via `include_recipe` in the application default recipe based on the type matching one of the `server_roles` values.
-
-Note about packages, the version is optional. If specified, the version will be passed as a parameter to the resource. Otherwise it will use the latest available version per the default `:install` action for the package provider.
-
-Rail's version additional notes
--------------------------------
-
-Note about `databases`, the data specified will be rendered as the `database.yml` file. In the `database` cookbook, this information is also used to set up privileges for the application user, and create the databases.
-
-Note about gems, the version is optional. If specified, the version will be passed as a parameter to the resource. Otherwise it will use the latest available version per the default `:install` action for the package provider.
-
-An example is data bag item is included in this cookbook at `examples/data_bags/apps/rails_app.json`.
-
-Java webapp version additional notes
-------------------------------------
-
-Note about `databases`, the data specified will be rendered as JNDI Datasource `Resources` in the servlet container context confiruation (`context.xml`) file. In the `database` cookbook, this information is also used to set up privileges for the application user, and create the databases.
-
-An example is data bag item is included in this cookbook at `examples/data_bags/apps/java_app.json`.
-
-Django version additional notes
--------------------------------
-
-Note about `databases`, the data specified will be rendered as the `settings_local.py` file. In the `database` cookbook, this information is also used to set up privileges for the application user, and create the databases.
-
-Note about pips, the version is optional. If specified, the version will be passed as a parameter to the resource. Otherwise it will use the latest available version per the default `:install` action for the python_pip package provider.
-
-The `local_settings_file` value may be used to supply an alternate name for the environment specific `settings_local.py`, since Django projects do not have a standard name for this file.
-
-An example is data bag item is included in this cookbook at `examples/data_bags/apps/django_app.json`.
-
-PHP version additional notes
-----------------------------
-
-Note about `databases`, the data specified will be rendered as the `local_settings.php` file. In the `database` cookbook, this information is also used to set up privileges for the application user, and create the databases.
-
-Note about pears/pecls, the version is optional. If specified, the version will be passed as a parameter to the resource. Otherwise it will use the latest available version per the default `:install` action for the php_pear package provider.
-
-The `local_settings_file` value is used to supply the name, and relative local project path, for the environment specific `local_settings.php`, since PHP projects do not have a standard name (or location) for this file.
-
-For applications that look for this file in the project root just supply a name:
-
-MediaWiki:
-
-    "local_settings_file": "LocalSettings.php"
-    
-Wordpress:
-
-    "local_settings_file": "wp-config.php"
-
-For applications that expect the file nested within the project root, you can supply a relative path:
-
-CakePHP:
-
-    "local_settings_file": "app/config/database.php"
-
-The template used to render this `local_settings.php` file is assumed to be provided in an application specific cookbook named after the application being deployed.  For example if you were deploying code for an application named `mediawiki` you would create a cookbook named `mediawiki` and in that cookbook place a template named `LocalSettings.php.erb`:
-
-    mediawiki/
-    +-- files
-    |   +-- default
-    |       +-- schema.sql
-    +-- metadata.rb
-    +-- README.md
-    +-- recipes
-    |   +-- db_bootstrap.rb
-    |   +-- default.rb
-    +-- templates
-        +-- default
-            +-- LocalSettings.php.erb
-
-The template will be passed the following variables which can be used to dynamically fill values in the ERB:
-
-* path - fill path to the 'current' project path
-* host - database master fqdn
-* database - environment specific database information from the application's data bag item
-* app - Ruby mash representation of the complete application data bag item for this app, useful if other arbitrary config data has been stashed in the data bag item.
-
-A few example `local_settings` templates are included in this cookbook at `examples/templates/defaults/*`:
-
-* MediaWiki - LocalSettings.php.erb
-* Wordpress - wp-config.php.erb
-
-An example is data bag item is included in this cookbook at `examples/data_bags/apps/php_app.json`.
+- bundler: if true, Unicorn will be run with `bundle exec`; if false it will be installed and run from the default gem path. Defaults to inheriting this setting from the rails LWRP
+- preload_app: passed to the `unicorn_config` LWRP
+- worker_processes: passed to the `unicorn_config` LWRP
+- before_fork: passed to the `unicorn_config` LWRP
+- port: passed to the `unicorn_config` LWRP
+- worker_timeout: passed to the `unicorn_config` LWRP
 
 Usage
 =====
 
-To use the application cookbook, we recommend creating a role named after the application, e.g. `my_app`. This role should match one of the `server_roles` entries, that will correspond to a `type` entry, in the databag. Create a Ruby DSL role in your chef-repo, or create the role directly with knife.
+A sample application that needs a database connection:
 
-    % knife role show my_app -Fj
-    {
-      "name": "my_app",
-      "chef_type": "role",
-      "json_class": "Chef::Role",
-      "default_attributes": {
-      },
-      "description": "",
-      "run_list": [
-        "recipe[application]"
-      ],
-      "override_attributes": {
-      }
-    }
+    application "redmine" do
+      path "/usr/local/www/redmine"
 
-Also recommended is a cookbook named after the application, e.g. `my_app`, for additional application specific setup such as other config files for queues, search engines and other components of your application. The `my_app` recipe can be used in the run list of the role, if it includes the `application` recipe.
+      rails do 
+        database do
+          database "redmine"
+          username "redmine"
+          password "awesome_password"
+        end
+        database_master_role "redmine_database_master"
+      end
 
-You should also create an environment. We use `production` in the examples and the documentation above. An example is in the source code's "examples" directory, and the JSON for an environment is below:
+      passenger_apache2 do
+      end
+    end
 
-    % knife environment show production -Fj
-    {
-      "name": "production",
-      "description": "",
-      "cookbook_versions": {
-      },
-      "json_class": "Chef::Environment",
-      "chef_type": "environment",
-      "default_attributes": {
-      },
-      "override_attributes": {
-      }
-    }
+You can invoke any method on the database block:
 
-Changes/Roadmap
-===============
+    application "my-app" do
+      path "..."
+      repository "..."
+      revision "..."
 
-## Future
+      rails do
+        database_master_role "my-app_database_master"
+        database do
+          database 'name'
+          quorum 2
+          replicas %w[Huey Dewey Louie]
+        end
+      end
+    end
 
-* [COOK-634] application cookbook should be updated to use LWRPs (vs clever recipe loading)
+The corresponding entries will be passed to the context template:
 
-## v0.99.12:
-
-* [COOK-606] application cookbook deployment recipes should use ipaddress instead of fqdn
-
-## v0.99.11:
-
-* make the _default chef_environment look like production rails env
-
-## v0.99.10:
-
-* Use Chef 0.10's `node.chef_environment` instead of `node['app_environment']`.
-
+    <%= @database['quorum']
+    <%= @database['replicas'].join(',') %>
 
 License and Author
 ==================
 
 Author:: Adam Jacob (<adam@opscode.com>)
+Author:: Andrea Campi (<andrea.campi@zephirworks.com.com>)
 Author:: Joshua Timberman (<joshua@opscode.com>)
 Author:: Seth Chisamore (<schisamo@opscode.com>)
 
-Copyright 2009-2011, Opscode, Inc.
+Copyright 2009-2012, Opscode, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
