@@ -78,7 +78,6 @@ action :before_migrate do
       bundler_deployment = ::File.exists?(::File.join(new_resource.release_path, "Gemfile.lock"))
     end
     execute "bundle install #{bundler_deployment ? "--deployment " : ""}--without #{common_groups}" do
-      ignore_failure true
       cwd new_resource.release_path
       user new_resource.owner
       environment new_resource.environment
@@ -91,7 +90,6 @@ action :before_migrate do
     # maybe worth doing run_symlinks_before_migrate before before_migrate callbacks,
     # or an add'l callback.
     execute "(ln -s ../../../shared/database.yml config/database.yml && rake gems:install); rm config/database.yml" do
-      ignore_failure true
       cwd new_resource.release_path
       user new_resource.owner
       environment new_resource.environment
