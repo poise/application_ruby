@@ -75,7 +75,9 @@ action :before_migrate do
       to "#{new_resource.path}/shared/vendor_bundle"
     end
     common_groups = %w{development test cucumber staging production}
-    execute "bundle install #{new_resource.bundler_deployment ? "--deployment " : ""}--without #{(common_groups -([new_resource.environment_name])).join(' ')}" do
+    common_groups -= [new_resource.environment_name]
+    common_groups = common_groups.join(' ')
+    execute "bundle install #{new_resource.bundler_deployment ? "--deployment " : ""}--without #{common_groups}" do
       ignore_failure true
       cwd new_resource.release_path
       user new_resource.owner
