@@ -18,11 +18,17 @@
 # limitations under the License.
 #
 
+include Chef::Mixin::LanguageIncludeRecipe
+
 action :before_compile do
 
   if new_resource.bundler.nil?
     rails_resource = new_resource.application.sub_resources.select{|res| res.type == :rails}.first
     new_resource.bundler (rails_resource && rails_resource.bundler)
+  end
+
+  unless new_resource.bundler
+    include_recipe "unicorn"
   end
 
   new_resource.restart_command "/etc/init.d/#{new_resource.name} hup" if !new_resource.restart_command
