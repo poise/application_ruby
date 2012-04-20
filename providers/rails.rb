@@ -24,12 +24,6 @@ action :before_compile do
     new_resource.bundler new_resource.gems.any? { |gem, ver| gem == 'bundler' }
   end
 
-  if new_resource.bundler
-    if new_resource.bundler_deployment.nil?
-      new_resource.bundler_deployment = ::File.exists?(::File.join(new_resource.release_path, "Gemfile.lock"))
-    end
-  end
-
   unless new_resource.migration_command
     command = "rake db:migrate"
     command = "bundle exec #{command}" if new_resource.bundler
@@ -78,7 +72,12 @@ action :before_migrate do
     common_groups += new_resource.bundler_without_groups
     common_groups -= [new_resource.environment_name]
     common_groups = common_groups.join(' ')
-    execute "bundle install #{new_resource.bundler_deployment ? "--deployment " : ""}--without #{common_groups}" do
+    bundler_deployment = new_resource.bundler_deployment
+    if bundler_deployment.nil?
+      # Check for a Gemfile.lock
+      bundler_deployment = ::File.exists?(::File.join(new_resource.release_path, "Gemfile.lock"))
+    end
+    execute "bundle install #{bundler_deployment ? "--deployment " : ""}--without #{common_groups}" do
       ignore_failure true
       cwd new_resource.release_path
       user new_resource.owner
