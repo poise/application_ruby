@@ -1,9 +1,9 @@
 #
 # Author:: Noah Kantrowitz <noah@opscode.com>
-# Cookbook Name:: application
+# Cookbook Name:: application_ruby
 # Provider:: unicorn
 #
-# Copyright:: 2011, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ action :before_restart do
 
   runit_service new_resource.name do
     template_name 'unicorn'
-    cookbook 'application_rails'
+    cookbook 'application_ruby'
     options(
       :app => new_resource,
       :rails_env => new_resource.environment_name,

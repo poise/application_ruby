@@ -1,13 +1,13 @@
 Description
 ===========
 
-This cookbook is designed to be able to describe and deploy Ruby on Rails web applications. Currently supported:
+This cookbook is designed to be able to describe and deploy Ruby web applications. Currently supported:
 
 * Ruby on Rails
 * Apache 2 with Passenger
 * Unicorn
 
-Note that this cookbook provides the Ruby on Rails-specific bindings for the `application` cookbook; you will find general documentation in that cookbook.
+Note that this cookbook provides the Ruby-specific bindings for the `application` cookbook; you will find general documentation in that cookbook.
 
 Other application stacks may be supported at a later date.
 

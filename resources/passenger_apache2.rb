@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: application_rails
+# Cookbook Name:: application_ruby
 # Resources:: passenger
 #
 # Copyright 2012, ZephirWorks

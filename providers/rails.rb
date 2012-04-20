@@ -1,9 +1,9 @@
 #
 # Author:: Noah Kantrowitz <noah@opscode.com>
-# Cookbook Name:: application
+# Cookbook Name:: application_ruby
 # Provider:: rails
 #
-# Copyright:: 2011, Opscode, Inc <legal@opscode.com>
+# Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -151,7 +151,7 @@ def create_database_yml
 
   template "#{new_resource.path}/shared/database.yml" do
     source new_resource.database_template || "database.yml.erb"
-    cookbook new_resource.database_template ? new_resource.cookbook_name : "application_rails"
+    cookbook new_resource.database_template ? new_resource.cookbook_name : "application_ruby"
     owner new_resource.owner
     group new_resource.group
     mode "644"
@@ -172,7 +172,7 @@ def create_memcached_yml
   end
   template "#{new_resource.path}/shared/memcached.yml" do
     source "memcached.yml.erb"
-    cookbook "application_rails"
+    cookbook "application_ruby"
     owner new_resource.owner
     group new_resource.group
     mode "644"
