@@ -6,6 +6,7 @@ This cookbook is designed to be able to describe and deploy Ruby web application
 * Ruby on Rails
 * Apache 2 with Passenger
 * Unicorn
+* Memcached client
 
 Note that this cookbook provides the Ruby-specific bindings for the `application` cookbook; you will find general documentation in that cookbook.
 
@@ -59,8 +60,6 @@ Bundler will be run with:
 - database\_master\_role: if a role name is provided, a Chef search will be run to find a node with than role in the same environment as the current role. If a node is found, its IP address will be used when rendering the `database.yml` file, but see the "Database block parameters" section below
 - database\_template: the name of the template that will be rendered to create the `database.yml` file; if specified it will be looked up in the application cookbook. Defaults to "settings.py.erb" from this cookbook
 - database: a block containing additional parameters for configuring the database connection
-- memcached\_role: if a role name is provided, a Chef search will be run to find a node with than role in the same environment as the current role. If a node is found, its IP address will be used when rendering the `memcached.yml` file, but see the "Database block parameters" section below
-- memcached: a block containing additional parameters for configuring the database connection
 
 # Database and memcached block parameters
 
@@ -90,6 +89,16 @@ The `passenger_apache2` sub-resource LWRP configures Unicorn to run the applicat
 - before_fork: passed to the `unicorn_config` LWRP
 - port: passed to the `unicorn_config` LWRP
 - worker_timeout: passed to the `unicorn_config` LWRP
+
+memcached
+---------
+
+The `memcached` sub-resource LWRP manages configuration for a Rails-compatible Memcached client.
+
+# Attribute Parameters
+
+- role: a Chef search will be run to find a node with than role in the same environment as the current node. If a node is found, its IP address will be used when rendering the `memcached.yml` file.
+- options: a block containing additional parameters for configuring the memcached client
 
 Usage
 =====
@@ -133,6 +142,30 @@ The corresponding entries will be passed to the context template:
 
     <%= @database['quorum'] %>
     <%= @database['replicas'].join(',') %>
+
+A sample application that connects to memcached:
+
+    application "my-app" do
+      path "..."
+      repository "..."
+      revision "..."
+
+      memcached do
+        role "memcached_master"
+        options do
+          ttl 1800
+          memory 256
+        end
+      end
+    end
+
+This will generate a config/memcached.yml file:
+
+    production:
+      ttl: 1800
+      memory: 256
+      servers:
+        - 192.168.0.10:11211
 
 License and Author
 ==================
