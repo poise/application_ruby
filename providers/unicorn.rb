@@ -24,7 +24,7 @@ action :before_compile do
 
   if new_resource.bundler.nil?
     rails_resource = new_resource.application.sub_resources.select{|res| res.type == :rails}.first
-    new_resource.bundler (rails_resource && rails_resource.bundler)
+    new_resource.bundler rails_resource && rails_resource.bundler
   end
 
   unless new_resource.bundler
