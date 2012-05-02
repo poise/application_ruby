@@ -35,6 +35,6 @@ def database(*args, &block)
 end
 
 def memcached(*args, &block)
-  @database ||= Mash.new
-  @database.update(options_block(*args, &block))
+  @memcached ||= Mash.new
+  @memcached.update(options_block(*args, &block))
 end
