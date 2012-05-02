@@ -82,6 +82,8 @@ unicorn
 
 The `passenger_apache2` sub-resource LWRP configures Unicorn to run the application.
 
+# Attribute Parameters
+
 - bundler: if true, Unicorn will be run with `bundle exec`; if false it will be installed and run from the default gem path. Defaults to inheriting this setting from the rails LWRP
 - preload_app: passed to the `unicorn_config` LWRP
 - worker_processes: passed to the `unicorn_config` LWRP
@@ -129,7 +131,7 @@ You can invoke any method on the database block:
 
 The corresponding entries will be passed to the context template:
 
-    <%= @database['quorum']
+    <%= @database['quorum'] %>
     <%= @database['replicas'].join(',') %>
 
 License and Author
