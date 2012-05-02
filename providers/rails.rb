@@ -161,7 +161,7 @@ def create_database_yml
 end
 
 def create_memcached_yml
-  results = search(:node, "role:#{new_resource.memcached_role} AND chef_environment:#{node.chef_environment} NOT hostname:#{node[:hostname]}")
+  results = search(:node, "role:#{new_resource.memcached_role} AND chef_environment:#{node.chef_environment} NOT hostname:#{node['hostname']}")
   if results.length == 0
     if node['roles'].include?(new_resource.memcached_role)
       results << node
