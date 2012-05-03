@@ -36,8 +36,7 @@ action :before_compile do
   })
 
   new_resource.symlink_before_migrate.update({
-    "database.yml" => "config/database.yml",
-    "memcached.yml" => "config/memcached.yml"
+    "database.yml" => "config/database.yml"
   })
 
 end
@@ -49,10 +48,6 @@ action :before_deploy do
   install_gems
 
   create_database_yml
-
-  if new_resource.memcached_role
-    create_memcached_yml
-  end
 
 end
 
@@ -156,26 +151,6 @@ def create_database_yml
       :host => host,
       :database => new_resource.database,
       :rails_env => new_resource.environment_name
-    )
-  end
-end
-
-def create_memcached_yml
-  results = search(:node, "role:#{new_resource.memcached_role} AND chef_environment:#{node.chef_environment} NOT hostname:#{node['hostname']}")
-  if results.length == 0
-    if node['roles'].include?(new_resource.memcached_role)
-      results << node
-    end
-  end
-  template "#{new_resource.path}/shared/memcached.yml" do
-    source "memcached.yml.erb"
-    cookbook "application_ruby"
-    owner new_resource.owner
-    group new_resource.group
-    mode "644"
-    variables(
-      :memcached_envs => new_resource.memcached,
-      :hosts => results.sort_by { |r| r.name }
     )
   end
 end
