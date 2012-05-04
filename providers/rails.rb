@@ -30,13 +30,6 @@ action :before_compile do
     new_resource.migration_command command
   end
 
-  if new_resource.precompile_assets
-    command = "rake assets:precompile"
-    command = "bundle exec #{command}" if new_resource.bundler
-    command = [new_resource.migration_command, command].compact.join(" && ")
-    new_resource.migration_command command
-  end
-
   new_resource.environment.update({
     "RAILS_ENV" => new_resource.environment_name,
     "PATH" => [Gem.default_bindir, ENV['PATH']].join(':')
@@ -115,6 +108,20 @@ action :before_symlink do
         Chef::Log.info("Migrations were run, removing role[#{new_resource.name}_run_migrations]")
         node.run_list.remove("role[#{new_resource.name}_run_migrations]")
       end
+    end
+  end
+
+  if new_resource.precompile_assets.nil?
+    new_resource.precompile_assets ::File.exists?(::File.join(new_resource.release_path, "config", "assets.yml"))
+  end
+
+  if new_resource.precompile_assets
+    command = "rake assets:precompile"
+    command = "bundle exec #{command}" if new_resource.bundler
+    execute command do
+      cwd new_resource.release_path
+      user new_resource.owner
+      environment new_resource.environment
     end
   end
 
