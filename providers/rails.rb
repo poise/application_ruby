@@ -30,6 +30,13 @@ action :before_compile do
     new_resource.migration_command command
   end
 
+  if new_resource.precompile_assets
+    command = "rake assets:precompile"
+    command = "bundle exec #{command}" if new_resource.bundler
+    command = [new_resource.migration_command, command].compact.join(" && ")
+    new_resource.migration_command command
+  end
+
   new_resource.environment.update({
     "RAILS_ENV" => new_resource.environment_name,
     "PATH" => [Gem.default_bindir, ENV['PATH']].join(':')
