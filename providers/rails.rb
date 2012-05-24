@@ -60,6 +60,11 @@ action :before_migrate do
       group new_resource.group
       mode '0755'
     end
+    directory "#{new_resource.release_path}/vendor" do
+      owner new_resource.owner
+      group new_resource.group
+      mode '0755'
+    end
     link "#{new_resource.release_path}/vendor/bundle" do
       to "#{new_resource.path}/shared/vendor_bundle"
     end
@@ -72,7 +77,7 @@ action :before_migrate do
       # Check for a Gemfile.lock
       bundler_deployment = ::File.exists?(::File.join(new_resource.release_path, "Gemfile.lock"))
     end
-    execute "bundle install #{bundler_deployment ? "--deployment " : ""}--without #{common_groups}" do
+    execute "bundle install --path=vendor/bundle #{bundler_deployment ? "--deployment " : ""}--without #{common_groups}" do
       cwd new_resource.release_path
       user new_resource.owner
       environment new_resource.environment
