@@ -57,7 +57,7 @@ Bundler will be run with:
 - bundler: if true, `bundler` will always be used; if false it will never be. Defaults to true if `gems` includes bundler
 - bundler_deployment: if true, Bundler will be run with the `--deployment` options. Defaults to true if a `Gemfile.lock` is present
 - bundler\_without\_groups: an Array of additional Bundler groups to skip
-- database\_master\_role: if a role name is provided, a Chef search will be run to find a node with than role in the same environment as the current role. If a node is found, its IP address will be used when rendering the `database.yml` file, but see the "Database block parameters" section below
+- database\_master\_role: if a role name is provided, a Chef search will be run to find a node with the role in the same environment as the current role. If a node is found, its IP address will be used when rendering the `database.yml` file, but see the "Database block parameters" section below
 - database\_template: the name of the template that will be rendered to create the `database.yml` file; if specified it will be looked up in the application cookbook. Defaults to "database.yml.erb" from this cookbook
 - database: a block containing additional parameters for configuring the database connection
 - precompile\_assets: if true, precompile assets for the Rails 3 asset pipeline. The default is nil, in which case we will try to autodetect whether the pipeline is in use by looking for `config/assets.yml`
@@ -80,7 +80,7 @@ The `passenger_apache2` sub-resource LWRP configures Apache 2 with Passenger to 
 unicorn
 -------
 
-The `passenger_apache2` sub-resource LWRP configures Unicorn to run the application.
+The `unicorn` sub-resource LWRP configures Unicorn to run the application.
 
 # Attribute Parameters
 
