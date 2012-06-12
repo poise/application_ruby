@@ -80,7 +80,7 @@ The `passenger_apache2` sub-resource LWRP configures Apache 2 with Passenger to 
 unicorn
 -------
 
-The `passenger_apache2` sub-resource LWRP configures Unicorn to run the application.
+The `unicorn` sub-resource LWRP configures Unicorn to run the application.
 
 # Attribute Parameters
 
