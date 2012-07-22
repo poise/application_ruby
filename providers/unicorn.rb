@@ -30,9 +30,19 @@ action :before_compile do
     include_recipe "unicorn"
   end
 
+<<<<<<< HEAD
   new_resource.bundle_command rails_resource && rails_resource.bundle_command
   new_resource.restart_command "/etc/init.d/#{new_resource.name} hup" if !new_resource.restart_command
 
+=======
+  if !new_resource.restart_command
+    new_resource.restart_command do
+      execute "/etc/init.d/#{new_resource.name} hup" do
+        user "root"
+      end
+    end
+  end
+>>>>>>> execute the default unicorn restart command as root
 end
 
 action :before_deploy do
