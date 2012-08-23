@@ -86,6 +86,7 @@ The `unicorn` sub-resource LWRP configures Unicorn to run the application.
 # Attribute Parameters
 
 - bundler: if true, Unicorn will be run with `bundle exec`; if false it will be installed and run from the default gem path. Defaults to inheriting this setting from the rails LWRP
+- bundler\_command: the command to use when executing `bundler` commands.  Useful for specifying things like rvm wrappers.  Defaults to `bundle`
 - preload_app: passed to the `unicorn_config` LWRP
 - worker_processes: passed to the `unicorn_config` LWRP
 - before_fork: passed to the `unicorn_config` LWRP
