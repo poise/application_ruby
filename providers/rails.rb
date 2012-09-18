@@ -26,7 +26,7 @@ action :before_compile do
 
   unless new_resource.migration_command
     command = "rake db:migrate"
-    command = "bundle exec #{command}" if new_resource.bundler
+    command = "#{bundle_command} exec #{command}" if new_resource.bundler
     new_resource.migration_command command
   end
 
@@ -77,7 +77,7 @@ action :before_migrate do
       # Check for a Gemfile.lock
       bundler_deployment = ::File.exists?(::File.join(new_resource.release_path, "Gemfile.lock"))
     end
-    execute "bundle install --path=vendor/bundle #{bundler_deployment ? "--deployment " : ""}--without #{common_groups}" do
+    execute "#{bundle_command} install --path=vendor/bundle #{bundler_deployment ? "--deployment " : ""}--without #{common_groups}" do
       cwd new_resource.release_path
       user new_resource.owner
       environment new_resource.environment
@@ -122,7 +122,7 @@ action :before_symlink do
 
   if new_resource.precompile_assets
     command = "rake assets:precompile"
-    command = "bundle exec #{command}" if new_resource.bundler
+    command = "#{bundle_command} exec #{command}" if new_resource.bundler
     execute command do
       cwd new_resource.release_path
       user new_resource.owner
@@ -140,6 +140,10 @@ end
 
 
 protected
+
+def bundle_command
+  new_resource.bundle_command || "bundle"
+end
 
 def install_gems
   new_resource.gems.each do |gem, opt|
