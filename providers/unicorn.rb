@@ -30,6 +30,7 @@ action :before_compile do
     include_recipe "unicorn"
   end
 
+  new_resource.bundle_command rails_resource && rails_resource.bundle_command
   new_resource.restart_command "/etc/init.d/#{new_resource.name} hup" if !new_resource.restart_command
 
 end
@@ -58,14 +59,14 @@ action :before_restart do
 
   runit_service new_resource.name do
     template_name 'unicorn'
-    owner new_resource.owner if new_resource.owner 
+    owner new_resource.owner if new_resource.owner
     group new_resource.group if new_resource.group
 
     cookbook 'application_ruby'
     options(
       :app => new_resource,
       :bundler => new_resource.bundler,
-      :bundle_command => rails_resource.bundle_command,
+      :bundle_command => new_resource.bundle_command : nil,
       :rails_env => new_resource.environment_name,
       :smells_like_rack => ::File.exists?(::File.join(new_resource.path, "current", "config.ru"))
     )
