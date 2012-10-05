@@ -23,7 +23,6 @@ include Chef::Mixin::LanguageIncludeRecipe
 action :before_compile do
 
   if new_resource.bundler.nil?
-    rails_resource = new_resource.application.sub_resources.select{|res| res.type == :rails}.first
     new_resource.bundler rails_resource && rails_resource.bundler
   end
 
@@ -31,6 +30,7 @@ action :before_compile do
     include_recipe "unicorn"
   end
 
+  new_resource.bundle_command rails_resource && rails_resource.bundle_command
   new_resource.restart_command "/etc/init.d/#{new_resource.name} hup" if !new_resource.restart_command
 
 end
@@ -59,12 +59,14 @@ action :before_restart do
 
   runit_service new_resource.name do
     template_name 'unicorn'
-    owner new_resource.owner if new_resource.owner 
+    owner new_resource.owner if new_resource.owner
     group new_resource.group if new_resource.group
 
     cookbook 'application_ruby'
     options(
       :app => new_resource,
+      :bundler => new_resource.bundler,
+      :bundle_command => new_resource.bundle_command,
       :rails_env => new_resource.environment_name,
       :smells_like_rack => ::File.exists?(::File.join(new_resource.path, "current", "config.ru"))
     )
@@ -74,4 +76,10 @@ action :before_restart do
 end
 
 action :after_restart do
+end
+
+protected
+
+def rails_resource
+  new_resource.application.sub_resources.select{|res| res.type == :rails}.first
 end
