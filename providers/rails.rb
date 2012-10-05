@@ -142,7 +142,7 @@ end
 protected
 
 def bundle_command
-  new_resource.bundle_command || "bundle"
+  new_resource.bundle_command
 end
 
 def install_gems
