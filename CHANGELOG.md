@@ -1,3 +1,7 @@
+## v1.0.4:
+
+* [COOK-1572] - allow specification of 'bundle' command via attribute
+
 ## v1.0.2:
 
 * [COOK-1360] - fix typo in README
