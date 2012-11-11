@@ -102,6 +102,24 @@ The `memcached` sub-resource LWRP manages configuration for a Rails-compatible M
 - role: a Chef search will be run to find a node with than role in the same environment as the current node. If a node is found, its IP address will be used when rendering the `memcached.yml` file.
 - options: a block containing additional parameters for configuring the memcached client
 
+redis
+-----
+
+The `redis` sub-resource LWRP manages a Rails application Redis configuration.
+Your Rails application can use Resque to run background jobs. Resque requires a
+Redis backend server. This sub-resource automatically sets up `redis.yml` in
+the `config` folder of your Rails application. It contains the IP address and
+port number of the Redis backend.
+
+### Attribute Parameters
+
+- `role`: finds a node with a matching role in the same environment as the
+  current node. If found, the Redis master's IP address becomes part of the
+  `redis.yml` configuration.
+
+- `template`: overrides the default `redis.yml` template. Provide your own to
+  override the default template, located in your own cookbook.
+
 Usage
 =====
 
@@ -168,6 +186,34 @@ This will generate a config/memcached.yml file:
       memory: 256
       servers:
         - 192.168.0.10:11211
+
+A sample application that connects to a Redis backend server:
+
+    application "my-app" do
+      path "..."
+      repository "..."
+      revision "..."
+
+      rails do
+        database_master_role "my-app_database_master"
+        database do
+          database 'name'
+          quorum 2
+          replicas %w[Huey Dewey Louie]
+        end
+
+        redis do
+          role "redis_master"
+        end
+      end
+    end
+
+This generates a `config/redis.yml` configuration file of the form:
+
+    production: 10.1.1.1:6379
+
+Where 10.1.1.1 becomes the cloud IP address of the node with the matching
+`redis_master` role.
 
 License and Author
 ==================

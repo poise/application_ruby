@@ -36,7 +36,11 @@ action :before_compile do
   })
 
   new_resource.symlink_before_migrate.update({
-    "database.yml" => "config/database.yml"
+    "database.yml" => "config/database.yml",
+
+    # Include a Redis YAML file in the hash of symbolic links. Useful when your
+    # Rails application includes Resque background workers.
+    "redis.yml" => "config/redis.yml"
   })
 
 end
@@ -48,6 +52,8 @@ action :before_deploy do
   install_gems
 
   create_database_yml
+
+  create_redis_yml if new_resource.redis['role']
 
 end
 
@@ -90,6 +96,12 @@ action :before_migrate do
     # maybe worth doing run_symlinks_before_migrate before before_migrate callbacks,
     # or an add'l callback.
     execute "(ln -s ../../../shared/database.yml config/database.yml && rake gems:install); rm config/database.yml" do
+      cwd new_resource.release_path
+      user new_resource.owner
+      environment new_resource.environment
+    end
+
+    execute "ln -s ../../../shared/redis.yml config/redis.yml" do
       cwd new_resource.release_path
       user new_resource.owner
       environment new_resource.environment
@@ -176,4 +188,42 @@ def create_database_yml
       :rails_env => new_resource.environment_name
     )
   end
+end
+
+# Creates a shared redis.yml file based on a Redis master role. The role
+# identifies the Redis backend server.
+#
+# The "application" cookbook provides the #find_matching_role method. It looks
+# up which nodes match a given role. Use this to set up a shared redis.yml
+# configuration. The following implementation assumes that you set up the Redis
+# backend server using the "redisio" cookbook by Brian Bianco. Your Rails app
+# still needs to bundle Resque and initialise it using the generated redis.yml
+# as follows:
+#
+#   Resque.redis = YAML.load_file(File.join(Rails.root, 'config', 'redis.yml'))[Rails.env]
+#
+# Put this in config/initializers/resque.rb in order to set up Resque within
+# your Rails application.
+def create_redis_yml
+  redis_master = new_resource.find_matching_role(new_resource.redis['role'])
+  host = if respond_to?(:redis) && redis.has_key?('host')
+           redis['host']
+         elsif redis_master && redis_master.attribute?('cloud')
+           redis_master['cloud']['local_ipv4']
+         elsif redis_master
+           redis_master['ipaddress']
+         end
+
+  template "#{new_resource.path}/shared/redis.yml" do
+    source new_resource.redis['template'] || "redis.yml.erb"
+    cookbook new_resource.redis['template'] ? new_resource.cookbook_name : "application_ruby"
+    owner new_resource.owner
+    group new_resource.group
+    mode "644"
+    variables(
+      :host => host,
+      :port => redis_master['redisio']['servers'][0]['port'],
+      :rails_env => new_resource.environment_name
+    )
+  end if host
 end
