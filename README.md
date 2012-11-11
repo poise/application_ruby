@@ -72,7 +72,7 @@ passenger\_apache2
 
 The `passenger_apache2` sub-resource LWRP configures Apache 2 with Passenger to run the application.
 
-# Attribute Parameters
+### Attribute Parameters
 
 - server\_aliases: an Array of server aliases
 - webapp\_template: the template to render to create the virtual host configuration. Defaults to "#{application name}.conf.erb"
@@ -83,7 +83,7 @@ unicorn
 
 The `unicorn` sub-resource LWRP configures Unicorn to run the application.
 
-# Attribute Parameters
+### Attribute Parameters
 
 - bundler: if true, Unicorn will be run with `bundle exec`; if false it will be installed and run from the default gem path. Defaults to inheriting this setting from the rails LWRP
 - preload_app: passed to the `unicorn_config` LWRP
@@ -97,7 +97,7 @@ memcached
 
 The `memcached` sub-resource LWRP manages configuration for a Rails-compatible Memcached client.
 
-# Attribute Parameters
+### Attribute Parameters
 
 - role: a Chef search will be run to find a node with than role in the same environment as the current node. If a node is found, its IP address will be used when rendering the `memcached.yml` file.
 - options: a block containing additional parameters for configuring the memcached client
