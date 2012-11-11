@@ -222,6 +222,7 @@ Author:: Adam Jacob (<adam@opscode.com>)
 Author:: Andrea Campi (<andrea.campi@zephirworks.com.com>)
 Author:: Joshua Timberman (<joshua@opscode.com>)
 Author:: Seth Chisamore (<schisamo@opscode.com>)
+Author:: Roy Ratcliffe (<roy@pioneeringsoftware.co.uk>)
 
 Copyright 2009-2012, Opscode, Inc.
 
