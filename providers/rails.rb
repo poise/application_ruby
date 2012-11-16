@@ -121,7 +121,7 @@ action :before_symlink do
   end
 
   if new_resource.precompile_assets
-    command = "rake assets:precompile"
+    command = "env RAILS_ENV=#{new_resource.environment_name} rake assets:precompile"
     command = "#{bundle_command} exec #{command}" if new_resource.bundler
     execute command do
       cwd new_resource.release_path
