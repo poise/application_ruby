@@ -213,6 +213,12 @@ def create_redis_yml
          elsif redis_master
            redis_master['ipaddress']
          end
+  port = redis_master['redisio']['servers'][0]['port']
+
+  # For the benefit of the resque cookbook, supply for it the host address and
+  # port number of the Redis backend.
+  node[:resque][:redis][:server][:addr] = host
+  node[:resque][:redis][:server][:port] = port
 
   template "#{new_resource.path}/shared/redis.yml" do
     source new_resource.redis['template'] || "redis.yml.erb"
@@ -222,7 +228,7 @@ def create_redis_yml
     mode "644"
     variables(
       :host => host,
-      :port => redis_master['redisio']['servers'][0]['port'],
+      :port => port,
       :rails_env => new_resource.environment_name
     )
   end if host
