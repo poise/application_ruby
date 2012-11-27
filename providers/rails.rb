@@ -217,8 +217,8 @@ def create_redis_yml
 
   # For the benefit of the resque cookbook, supply for it the host address and
   # port number of the Redis backend.
-  node[:resque][:redis][:server][:addr] = host
-  node[:resque][:redis][:server][:port] = port
+  new_resource.node.set[:resque][:redis][:server][:addr] = host
+  new_resource.node.set[:resque][:redis][:server][:port] = port
 
   template "#{new_resource.path}/shared/redis.yml" do
     source new_resource.redis['template'] || "redis.yml.erb"
