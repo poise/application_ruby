@@ -72,7 +72,7 @@ passenger\_apache2
 
 The `passenger_apache2` sub-resource LWRP configures Apache 2 with Passenger to run the application.
 
-# Attribute Parameters
+### Attribute Parameters
 
 - server\_aliases: an Array of server aliases
 - webapp\_template: the template to render to create the virtual host configuration. Defaults to "#{application name}.conf.erb"
@@ -83,7 +83,7 @@ unicorn
 
 The `unicorn` sub-resource LWRP configures Unicorn to run the application.
 
-# Attribute Parameters
+### Attribute Parameters
 
 - bundler: if true, Unicorn will be run with `bundle exec`; if false it will be installed and run from the default gem path. Defaults to inheriting this setting from the rails LWRP
 - preload_app: passed to the `unicorn_config` LWRP
@@ -97,10 +97,28 @@ memcached
 
 The `memcached` sub-resource LWRP manages configuration for a Rails-compatible Memcached client.
 
-# Attribute Parameters
+### Attribute Parameters
 
 - role: a Chef search will be run to find a node with than role in the same environment as the current node. If a node is found, its IP address will be used when rendering the `memcached.yml` file.
 - options: a block containing additional parameters for configuring the memcached client
+
+redis
+-----
+
+The `redis` sub-resource LWRP manages a Rails application Redis configuration.
+Your Rails application can use Resque to run background jobs. Resque requires a
+Redis backend server. This sub-resource automatically sets up `redis.yml` in
+the `config` folder of your Rails application. It contains the IP address and
+port number of the Redis backend.
+
+### Attribute Parameters
+
+- `role`: finds a node with a matching role in the same environment as the
+  current node. If found, the Redis master's IP address becomes part of the
+  `redis.yml` configuration.
+
+- `template`: overrides the default `redis.yml` template. Provide your own to
+  override the default template, located in your own cookbook.
 
 Usage
 =====
@@ -169,6 +187,34 @@ This will generate a config/memcached.yml file:
       servers:
         - 192.168.0.10:11211
 
+A sample application that connects to a Redis backend server:
+
+    application "my-app" do
+      path "..."
+      repository "..."
+      revision "..."
+
+      rails do
+        database_master_role "my-app_database_master"
+        database do
+          database 'name'
+          quorum 2
+          replicas %w[Huey Dewey Louie]
+        end
+
+        redis do
+          role "redis_master"
+        end
+      end
+    end
+
+This generates a `config/redis.yml` configuration file of the form:
+
+    production: 10.1.1.1:6379
+
+Where 10.1.1.1 becomes the cloud IP address of the node with the matching
+`redis_master` role.
+
 License and Author
 ==================
 
@@ -176,6 +222,7 @@ Author:: Adam Jacob (<adam@opscode.com>)
 Author:: Andrea Campi (<andrea.campi@zephirworks.com.com>)
 Author:: Joshua Timberman (<joshua@opscode.com>)
 Author:: Seth Chisamore (<schisamo@opscode.com>)
+Author:: Roy Ratcliffe (<roy@pioneeringsoftware.co.uk>)
 
 Copyright 2009-2012, Opscode, Inc.
 

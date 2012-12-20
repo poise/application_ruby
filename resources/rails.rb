@@ -34,3 +34,8 @@ def database(*args, &block)
   @database ||= Mash.new
   @database.update(options_block(*args, &block))
 end
+
+def redis(*args, &block)
+  @redis ||= Mash.new
+  @redis.update(options_block(*args, &block))
+end

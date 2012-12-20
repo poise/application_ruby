@@ -68,6 +68,7 @@ action :before_restart do
     template_name 'unicorn'
     owner new_resource.owner if new_resource.owner
     group new_resource.group if new_resource.group
+    env new_resource.environment unless new_resource.environment.empty?
 
     cookbook 'application_ruby'
     options(
