@@ -62,6 +62,8 @@ action :before_restart do
     preload_app new_resource.preload_app
     worker_processes new_resource.worker_processes
     before_fork new_resource.before_fork
+    after_fork new_resource.after_fork
+    pid new_resource.pid
   end
 
   runit_service new_resource.name do
