@@ -1,3 +1,7 @@
+## v1.0.8:
+
+* [COOK-2159] - cookbook attribute is not treated as a string
+
 ## v1.0.6:
 
 * [COOK-1481] - unicorn provider in application_ruby cookbook should run its restart
