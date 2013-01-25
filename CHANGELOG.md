@@ -1,3 +1,7 @@
+## v1.0.10:
+
+* [COOK-2260] - pin runit version
+
 ## v1.0.8:
 
 * [COOK-2159] - cookbook attribute is not treated as a string
