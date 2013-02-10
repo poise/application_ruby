@@ -78,7 +78,6 @@ action :before_restart do
       :rails_env => new_resource.environment_name,
       :smells_like_rack => ::File.exists?(::File.join(new_resource.path, "current", "config.ru"))
     )
-    run_restart false
   end
 
 end
