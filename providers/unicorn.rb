@@ -65,7 +65,8 @@ action :before_restart do
   end
 
   runit_service new_resource.name do
-    template_name 'unicorn'
+    run_template_name 'unicorn'
+    log_template_name 'unicorn'
     owner new_resource.owner if new_resource.owner
     group new_resource.group if new_resource.group
 
@@ -77,7 +78,6 @@ action :before_restart do
       :rails_env => new_resource.environment_name,
       :smells_like_rack => ::File.exists?(::File.join(new_resource.path, "current", "config.ru"))
     )
-    run_restart false
   end
 
 end
