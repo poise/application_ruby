@@ -1,3 +1,9 @@
+## v1.1.0
+
+* [COOK-2362] - `application_ruby` unicorn uses `run_restart`
+* [COOK-2363] - `application_ruby` unicorn should set
+  `log_template_name` and `run_template_name`
+
 ## v1.0.10:
 
 * [COOK-2260] - pin runit version
