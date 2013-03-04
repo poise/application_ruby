@@ -91,6 +91,7 @@ The `unicorn` sub-resource LWRP configures Unicorn to run the application.
 - before_fork: passed to the `unicorn_config` LWRP
 - port: passed to the `unicorn_config` LWRP
 - worker_timeout: passed to the `unicorn_config` LWRP
+- environment: hash with environment variables for the unicorn processes. Passed to the `runit_service` LWRP.
 
 memcached
 ---------
