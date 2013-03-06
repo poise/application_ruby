@@ -32,7 +32,7 @@ action :before_compile do
 
   new_resource.environment.update({
     "RAILS_ENV" => new_resource.environment_name,
-    "PATH" => [Gem.default_bindir, ENV['PATH']].join(':')
+    "PATH" => [ENV['PATH'], Gem.default_bindir].join(':')
   })
 
   new_resource.symlink_before_migrate.update({
