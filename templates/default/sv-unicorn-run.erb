@@ -3,4 +3,9 @@
 cd <%= @options[:app].path %>/current
 
 exec 2>&1
-exec <%= node[:runit][:chpst_bin] %> -u <%= @options[:app].owner %>:<%= @options[:app].group %> <%= @options[:bundler] ? "#{@options[:bundle_command]} exec" : '' %> <%= @options[:smells_like_rack] ? 'unicorn' : 'unicorn_rails' %> -E <%= @options[:rails_env] %> -c /etc/unicorn/<%= @options[:app].application.name %>.rb
+exec <%= node[:runit][:chpst_bin] %> \
+  -u <%= @options[:app].owner %>:<%= @options[:app].group %> \
+  <%= @options[:bundler] ? "#{@options[:bundle_command]} exec" : '' %> \
+  <%= @options[:smells_like_rack] ? 'unicorn' : 'unicorn_rails' %> \
+  -E <%= @options[:rails_env] %> \
+  -c /etc/unicorn/<%= @options[:app].application.name %>.rb
