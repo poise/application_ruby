@@ -62,6 +62,11 @@ action :before_restart do
     preload_app new_resource.preload_app
     worker_processes new_resource.worker_processes
     before_fork new_resource.before_fork
+    if new_resource.bundler
+      gemfile_path = ::File.join(new_resource.path, 'current/Gemfile')
+      command = %Q(ENV['BUNDLE_GEMFILE'] = '#{gemfile_path}')
+      before_exec command
+    end
   end
 
   runit_service new_resource.name do
