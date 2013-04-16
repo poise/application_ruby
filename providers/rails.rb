@@ -116,6 +116,11 @@ action :before_symlink do
     end
   end
 
+end
+
+action :before_restart do
+
+  # SM: I moved this here to avoid rake precompile assets bombing when the DB hasn't been created yet
   if new_resource.precompile_assets.nil?
     new_resource.precompile_assets ::File.exists?(::File.join(new_resource.release_path, "config", "assets.yml"))
   end
@@ -130,9 +135,6 @@ action :before_symlink do
     end
   end
 
-end
-
-action :before_restart do
 end
 
 action :after_restart do
