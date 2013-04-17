@@ -1,3 +1,9 @@
+Reasons for fork
+================
+
+* Allow an ENV to be created for unicorn
+* Move asset precompilation to before_restart to avoid rake complaining when precompiling before the DB exists
+
 Description
 ===========
 
