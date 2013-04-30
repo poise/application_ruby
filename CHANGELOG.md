@@ -1,3 +1,15 @@
+## v1.1.2:
+
+### Bug
+
+- [COOK-2638]: cookbook attribute is not treated as
+  a string when specifying `database_yml_template`
+
+### Improvement
+
+- [COOK-2525]: application_ruby: split runit template into multiple
+  lines
+
 ## v1.1.0
 
 * [COOK-2362] - `application_ruby` unicorn uses `run_restart`
