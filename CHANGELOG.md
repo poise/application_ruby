@@ -1,3 +1,10 @@
+## v1.1.4:
+
+### Sub-task
+
+- [COOK-2806]: Including `passenger_apache2::mod_rails` does not enable
+  passenger
+
 ## v1.1.2:
 
 ### Bug
