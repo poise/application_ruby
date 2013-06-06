@@ -34,8 +34,8 @@ action :before_deploy do
   Chef::Log.warn("No node with role #{new_resource.role}") unless results.any?
 
   template "#{new_resource.application.path}/shared/memcached.yml" do
-    source "memcached.yml.erb"
-    cookbook "application_ruby"
+    source new_resource.memcached_template || "memcached.yml.erb"
+    cookbook new_resource.memcached_template ? new_resource.cookbook_name.to_s : "application_ruby"
     owner new_resource.owner
     group new_resource.group
     mode "644"

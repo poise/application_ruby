@@ -20,6 +20,8 @@
 include ApplicationCookbook::ResourceBase
 
 attribute :role, :kind_of => [String, NilClass], :default => nil
+# Actually defaults to "memcached.yml.erb", but nil means it wasn't set by the user
+attribute :memcached_template, :kind_of => [String, NilClass], :default => nil
 
 def options(*args, &block)
   @options ||= Mash.new
