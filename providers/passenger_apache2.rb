@@ -34,7 +34,11 @@ action :before_compile do
     new_resource.server_aliases server_aliases
   end
 
-  new_resource.restart_command "touch #{new_resource.application.path}/current/tmp/restart.txt" unless new_resource.restart_command
+  new_resource.restart_command do
+    directory "#{new_resource.application.path}/current/tmp"
+    execute "touch #{new_resource.application.path}/current/tmp/restart.txt"
+  end unless new_resource.restart_command
+
 end
 
 action :before_deploy do
