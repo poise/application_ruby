@@ -172,7 +172,7 @@ def create_database_yml
 
   template "#{new_resource.path}/shared/database.yml" do
     source new_resource.database_template || "database.yml.erb"
-    cookbook new_resource.database_template ? new_resource.cookbook_name.to_s : "application_ruby"
+    cookbook new_resource.database_template_cookbook || (new_resource.database_template ? new_resource.cookbook_name.to_s : "application_ruby")
     owner new_resource.owner
     group new_resource.group
     mode "644"
