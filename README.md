@@ -102,6 +102,15 @@ The `memcached` sub-resource LWRP manages configuration for a Rails-compatible M
 - role: a Chef search will be run to find a node with than role in the same environment as the current node. If a node is found, its IP address will be used when rendering the `memcached.yml` file.
 - options: a block containing additional parameters for configuring the memcached client
 
+Attributes
+==========
+
+scm\_provider
+------------
+
+Supports all standard scm providers (git, svn), and in addition:
+* Chef::Provider::RemoteArchive::Deploy allows downloading and unpacking an archive from a remote url
+
 Usage
 =====
 
@@ -110,7 +119,7 @@ A sample application that needs a database connection:
     application "redmine" do
       path "/usr/local/www/redmine"
 
-      rails do 
+      rails do
         database do
           database "redmine"
           username "redmine"
@@ -168,6 +177,21 @@ This will generate a config/memcached.yml file:
       memory: 256
       servers:
         - 192.168.0.10:11211
+
+A sample application that pulls from a remote archive:
+
+    application "my-app" do
+      path "..."
+      scm_provider Chef::Provider::RemoteArchive::Deploy
+      repository ".../my-app.tar.gz"
+
+      rails do
+        ...
+      end
+
+      passenger_apache2 do
+      end
+    end
 
 License and Author
 ==================
