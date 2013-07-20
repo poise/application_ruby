@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-include Chef::Resource::ApplicationBase
+include ApplicationCookbook::ResourceBase
 
 attribute :role, :kind_of => [String, NilClass], :default => nil
 
