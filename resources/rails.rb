@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-include Chef::Resource::ApplicationBase
+include ApplicationCookbook::ResourceBase
 
 attribute :database_master_role, :kind_of => [String, NilClass], :default => nil
 # Actually defaults to "database.yml.erb", but nil means it wasn't set by the user
