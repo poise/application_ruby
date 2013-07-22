@@ -63,6 +63,7 @@ action :before_restart do
     worker_processes new_resource.worker_processes
     before_fork new_resource.before_fork
     after_fork new_resource.after_fork
+    before_exec new_resource.before_exec
   end
 
   runit_service new_resource.name do
