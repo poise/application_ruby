@@ -56,12 +56,22 @@ action :before_restart do
   new_resource = @new_resource
 
   unicorn_config "/etc/unicorn/#{new_resource.name}.rb" do
-    listen({ new_resource.port => new_resource.options })
+    listen(new_resource.listen || { new_resource.port => new_resource.options })
     working_directory ::File.join(new_resource.path, 'current')
     worker_timeout new_resource.worker_timeout
     preload_app new_resource.preload_app
     worker_processes new_resource.worker_processes
     before_fork new_resource.before_fork
+    after_fork new_resource.after_fork
+    forked_user new_resource.forked_user
+    forked_group new_resource.forked_group
+    before_exec new_resource.before_exec
+    pid new_resource.pid
+    stderr_path new_resource.stderr_path
+    stdout_path new_resource.stdout_path
+    unicorn_command_line new_resource.unicorn_command_line
+    copy_on_write new_resource.copy_on_write
+    enable_stats new_resource.enable_stats
   end
 
   runit_service new_resource.name do
