@@ -64,6 +64,7 @@ action :before_restart do
     before_fork new_resource.before_fork
     after_fork new_resource.after_fork
     before_exec new_resource.before_exec
+    pid new_resource.pid
   end
 
   runit_service new_resource.name do
