@@ -88,9 +88,20 @@ The `unicorn` sub-resource LWRP configures Unicorn to run the application.
 - bundler: if true, Unicorn will be run with `bundle exec`; if false it will be installed and run from the default gem path. Defaults to inheriting this setting from the rails LWRP
 - preload_app: passed to the `unicorn_config` LWRP
 - worker_processes: passed to the `unicorn_config` LWRP
+- before_exec: passed to the `unicorn_config` LWRP
 - before_fork: passed to the `unicorn_config` LWRP
+- after_fork: passed to the `unicorn_config` LWRP
 - port: passed to the `unicorn_config` LWRP
+- listen: passed to the `unicorn_config` LWRP; overrides port
 - worker_timeout: passed to the `unicorn_config` LWRP
+- forked_user: passed to the `unicorn_config` LWRP
+- forked_group: passed to the `unicorn_config` LWRP
+- pid: passed to the `unicorn_config` LWRP
+- stderr_path: passed to the `unicorn_config` LWRP
+- stdout_path: passed to the `unicorn_config` LWRP
+- unicorn_command_line: passed to the `unicorn_config` LWRP
+- copy_on_write: passed to the `unicorn_config` LWRP
+- enable_stats: passed to the `unicorn_config` LWRP
 
 memcached
 ---------
