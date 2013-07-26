@@ -33,7 +33,12 @@ fi
  
 if [ ! $RUNNING ]; then
     echo "Starting unicorn"
-    rm /tmp/unicorn.sock  # this sometimes gets left behind on reboot?
+
+    # delete if there's a stray unicorn.sock
+    if [ -e /var/unicorn.sock ]; then
+        rm /tmp/unicorn.sock || true  # this sometimes gets left behind on reboot?
+    fi
+
     cd <%= @options[:app].path %>/current
     <%= node[:runit][:chpst_bin] %> \
       <% if @options[:env_dir] %>-e <%= node[:runit][:sv_dir] %>/<%= @options[:app].application.name %>/env<% end %> \
