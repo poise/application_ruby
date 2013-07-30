@@ -1,3 +1,11 @@
+## v2.0.0:
+
+### Bug
+
+- [COOK-3306]: Multiple Memory Leaks in Application Cookbook
+- [COOK-3219]: `application_ruby` cookbook bundle install in
+  1.9.3-based omnibus installs 1.9.x gems into ruby 2.0 apps
+
 ## v1.1.4:
 
 ### Sub-task

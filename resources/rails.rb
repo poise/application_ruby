@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-include Chef::Resource::ApplicationBase
+include ApplicationCookbook::ResourceBase
 
 attribute :database_master_role, :kind_of => [String, NilClass], :default => nil
 # Actually defaults to "database.yml.erb", but nil means it wasn't set by the user
@@ -30,6 +30,7 @@ attribute :bundler_without_groups, :kind_of => [Array], :default => []
 attribute :bundle_command, :kind_of => [String, NilClass], :default => "bundle"
 attribute :bundle_cmd_suffix, :kind_of => [String, NilClass], :default => nil
 attribute :precompile_assets, :kind_of => [NilClass, TrueClass, FalseClass], :default => nil
+attribute :use_omnibus_ruby, :kind_of => [TrueClass, FalseClass], :default => true
 
 def database(*args, &block)
   @database ||= Mash.new
