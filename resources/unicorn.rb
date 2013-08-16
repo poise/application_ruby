@@ -23,10 +23,21 @@ include ApplicationCookbook::ResourceBase
 attribute :preload_app, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :worker_processes, :kind_of => Integer, :default => [node['cpu']['total'].to_i * 4, 8].min
 attribute :before_fork, :kind_of => String, :default => 'sleep 1'
+attribute :after_fork, :kind_of => [String, NilClass], :default => nil
 attribute :port, :kind_of => String, :default => "8080"
 attribute :worker_timeout, :kind_of => Integer, :default => 60
 attribute :bundler, :kind_of => [TrueClass, FalseClass, NilClass], :default => nil
 attribute :bundle_command, :kind_of => [String, NilClass], :default => nil
+attribute :listen, :kind_of => [Hash, NilClass], :default => nil
+attribute :forked_user, :kind_of => [String, NilClass], :default => nil
+attribute :forked_group, :kind_of => [String, NilClass], :default => nil
+attribute :before_exec, :kind_of => [String, NilClass], :default => nil
+attribute :pid, :kind_of => [String, NilClass], :default => nil
+attribute :stderr_path, :kind_of => [String, NilClass], :default => nil
+attribute :stdout_path, :kind_of => [String, NilClass], :default => nil
+attribute :unicorn_command_line, :kind_of => [String, NilClass], :default => nil
+attribute :copy_on_write, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :enable_stats, :kind_of => [TrueClass, FalseClass], :default => false
 
 def options(*args, &block)
   @options ||= Mash[:tcp_nodelay => true, :backlog => 100]
