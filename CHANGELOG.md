@@ -3,6 +3,12 @@ application_ruby Cookbook CHANGELOG
 This file is used to list changes made in each version of the application_rubycookbook.
 
 
+v2.1.0
+------
+### Improvement
+- **[COOK-3367](https://tickets.opscode.com/browse/COOK-3367)** - Support more of unicorn's configuration
+- **[COOK-3124](https://tickets.opscode.com/browse/COOK-3124)** - Add `memcached_template` attribute to so alternative templates may be used
+
 v2.0.0
 ------
 ### Bug
