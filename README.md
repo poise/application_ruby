@@ -121,7 +121,7 @@ A sample application that needs a database connection:
     application "redmine" do
       path "/usr/local/www/redmine"
 
-      rails do 
+      rails do
         database do
           database "redmine"
           username "redmine"
