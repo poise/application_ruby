@@ -45,6 +45,12 @@ action :before_compile do
     "database.yml" => "config/database.yml"
   })
 
+
+  if new_resource.symlink_logs
+    new_resource.purge_before_symlink.push("log")
+    new_resource.symlinks.update({"log" => "log"})
+  end
+
 end
 
 action :before_deploy do
@@ -58,6 +64,8 @@ action :before_deploy do
 end
 
 action :before_migrate do
+
+  symlink_logs if new_resource.symlink_logs
 
   if new_resource.bundler
     Chef::Log.info "Running bundle install"
@@ -181,5 +189,22 @@ def create_database_yml
       :database => new_resource.database,
       :rails_env => new_resource.environment_name
     )
+  end
+end
+
+def symlink_logs
+  resource = new_resource
+
+  directory "#{resource.path}/shared/log" do
+    owner resource.owner
+    group resource.group
+  end
+
+  logrotate_app resource.name do
+    cookbook "logrotate"
+    path "#{resource.path}/shared/#{resource.environment_name}.log"
+    frequency "daily"
+    rotate 30
+    create "666 #{resource.owner} #{resource.group}"
   end
 end
