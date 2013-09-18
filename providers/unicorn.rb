@@ -86,7 +86,8 @@ action :before_restart do
       :bundler => new_resource.bundler,
       :bundle_command => new_resource.bundle_command,
       :rails_env => new_resource.environment_name,
-      :smells_like_rack => ::File.exists?(::File.join(new_resource.path, "current", "config.ru"))
+      :smells_like_rack => ::File.exists?(::File.join(new_resource.path, "current", "config.ru")),
+			:runit_wait_time => new_resource.runit_wait_time
     )
   end
 
