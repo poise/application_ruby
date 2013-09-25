@@ -12,3 +12,4 @@ end
 
 depends "application", "~> 3.0"
 depends "runit", "~> 1.0"
+depends "logrotate", "~> 1.0"
