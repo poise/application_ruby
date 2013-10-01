@@ -8,5 +8,4 @@ exec <%= node[:runit][:chpst_bin] %> \
   <%= @options[:bundler] ? "#{@options[:bundle_command]} exec" : '' %> \
   <%= @options[:smells_like_rack] ? 'unicorn' : 'unicorn_rails' %> \
   -E <%= @options[:rails_env] %> \
-	-c /etc/unicorn/<%= @options[:app].application.name %>.rb \
-	-w <%= @options[:runit_wait_time] %>
+  -c /etc/unicorn/<%= @options[:app].application.name %>.rb
