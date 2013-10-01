@@ -3,6 +3,11 @@ application_ruby Cookbook CHANGELOG
 This file is used to list changes made in each version of the application_rubycookbook.
 
 
+v2.1.2
+------
+### Improvement
+- **[COOK-3616](https://tickets.opscode.com/browse/COOK-3616)** - Simplify log symlinking for rails apps
+
 v2.1.0
 ------
 ### Improvement
