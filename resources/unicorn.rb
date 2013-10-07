@@ -21,7 +21,7 @@
 include ApplicationCookbook::ResourceBase
 
 attribute :preload_app, :kind_of => [TrueClass, FalseClass], :default => false
-attribute :worker_processes, :kind_of => Integer, :default => [node['cpu']['total'].to_i * 4, 8].min
+attribute :worker_processes, :kind_of => Integer, :default => [node.fetch('cpu', {}).fetch('total', 1).to_i * 4, 8].min
 attribute :before_fork, :kind_of => String, :default => 'sleep 1'
 attribute :after_fork, :kind_of => [String, NilClass], :default => nil
 attribute :port, :kind_of => String, :default => "8080"
