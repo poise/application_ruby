@@ -3,6 +3,12 @@ application_ruby Cookbook CHANGELOG
 This file is used to list changes made in each version of the application_rubycookbook.
 
 
+v2.1.4
+------
+### Bug
+- **[COOK-3625](https://tickets.opscode.com/browse/COOK-3625)** - Fix an issue where unicorn fails when node does not provide cpu count
+
+
 v2.1.2
 ------
 ### Improvement
