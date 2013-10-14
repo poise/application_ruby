@@ -35,8 +35,12 @@ action :before_compile do
   end
 
   new_resource.restart_command do
-    directory "#{new_resource.application.path}/current/tmp"
-    execute "touch #{new_resource.application.path}/current/tmp/restart.txt"
+    directory "#{new_resource.application.path}/current/tmp" do
+      recursive true
+    end
+    file "#{new_resource.application.path}/current/tmp/restart.txt" do
+      action :touch
+    end
   end unless new_resource.restart_command
 
 end
