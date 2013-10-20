@@ -28,6 +28,7 @@ attribute :bundler, :kind_of => [NilClass, TrueClass, FalseClass], :default => n
 attribute :bundler_deployment, :kind_of => [NilClass, TrueClass, FalseClass], :default => nil
 attribute :bundler_without_groups, :kind_of => [Array], :default => []
 attribute :bundle_command, :kind_of => [String, NilClass], :default => "bundle"
+attribute :bundle_options, :kind_of => [String, NilClass], :default => nil
 attribute :precompile_assets, :kind_of => [NilClass, TrueClass, FalseClass], :default => nil
 attribute :use_omnibus_ruby, :kind_of => [TrueClass, FalseClass], :default => true
 attribute :symlink_logs, :kind_of => [TrueClass, FalseClass], :default => false
