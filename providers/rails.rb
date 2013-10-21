@@ -91,7 +91,10 @@ action :before_migrate do
       # Check for a Gemfile.lock
       bundler_deployment = ::File.exists?(::File.join(new_resource.release_path, "Gemfile.lock"))
     end
-    execute "#{bundle_command} install --path=vendor/bundle #{bundler_deployment ? "--deployment " : ""}--without #{common_groups}" do
+    command = "#{bundle_command} install --path=vendor/bundle --without #{common_groups}"
+    command = "#{command} --deployment" if bundler_deployment
+    command = "#{command} #{bundle_cmd_suffix}" if bundle_cmd_suffix
+    execute command do
       cwd new_resource.release_path
       user new_resource.owner
       environment new_resource.environment
@@ -157,6 +160,10 @@ protected
 
 def bundle_command
   new_resource.bundle_command
+end
+
+def bundle_cmd_suffix
+  new_resource.bundle_cmd_suffix
 end
 
 def install_gems
