@@ -10,6 +10,6 @@ version          "2.1.5"
   depends cb
 end
 
-depends "application", "~> 3.0"
+depends "application", "~> 4.0"
 depends "runit", "~> 1.0"
 depends "logrotate", "~> 1.0"
