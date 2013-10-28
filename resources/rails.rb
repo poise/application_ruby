@@ -29,7 +29,7 @@ attribute :bundler_deployment, :kind_of => [NilClass, TrueClass, FalseClass], :d
 attribute :bundler_without_groups, :kind_of => [Array], :default => []
 attribute :bundle_command, :kind_of => [String, NilClass], :default => "bundle"
 attribute :precompile_assets, :kind_of => [NilClass, TrueClass, FalseClass], :default => nil
-attribute :use_omnibus_ruby, :kind_of => [TrueClass, FalseClass], :default => true
+attribute :use_omnibus_ruby, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :symlink_logs, :kind_of => [TrueClass, FalseClass], :default => false
 
 def database(*args, &block)
