@@ -176,7 +176,7 @@ def install_gems
 end
 
 def create_database_yml
-  host = new_resource.find_database_server(new_resource.database_master_role)
+  host = new_resource.database['host'] || new_resource.find_database_server(new_resource.database_master_role)
 
   template "#{new_resource.path}/shared/database.yml" do
     source new_resource.database_template || "database.yml.erb"
