@@ -3,6 +3,11 @@ application_ruby Cookbook CHANGELOG
 This file is used to list changes made in each version of the application_rubycookbook.
 
 
+v3.0.0
+------
+Major version bump. Breaking backwards compatibility with Chef10.x
+
+
 v2.2.0
 ------
 ### Bug
