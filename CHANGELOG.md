@@ -3,6 +3,14 @@ application_ruby Cookbook CHANGELOG
 This file is used to list changes made in each version of the application_rubycookbook.
 
 
+v2.2.0
+------
+### Bug
+- **[COOK-3895](https://tickets.opscode.com/browse/COOK-3895)** - application_ruby use_omnibus_ruby attr needs to default to false
+- **[COOK-3894](https://tickets.opscode.com/browse/COOK-3894)** - application_ruby cookbook needs version bump to pick up application v4.0 cookbook
+- **[COOK-2079](https://tickets.opscode.com/browse/COOK-2079)** - Attempting to touch restart.txt should not cause a chef-client run to fail.
+
+
 v2.1.4
 ------
 ### Bug
