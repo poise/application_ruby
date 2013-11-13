@@ -55,8 +55,10 @@ Bundler will be run with:
 
 - gems: an Array of gems to install
 - bundler: if true, `bundler` will always be used; if false it will never be. Defaults to true if `gems` includes bundler
-- bundle_command: The command to execute when calling bundler commands.  Useful for specifing alternate commands such as RVM wrappers.  Defaults to `bundle`.
-- bundler_deployment: if true, Bundler will be run with the `--deployment` options. Defaults to true if a `Gemfile.lock` is present
+- bundle\_command: The command to execute when calling bundler commands.  Useful for specifing alternate commands such as RVM wrappers.  Defaults to `bundle`.
+- bundle\_options: additional options which will be appended to the end of the `bundle` command string. Useful for capturing the output to a file using the tee command
+e.g. `bundle_options "2>&1 | tee -a \some\log\file.log"` 
+- bundler\_deployment: if true, Bundler will be run with the `--deployment` options. Defaults to true if a `Gemfile.lock` is present
 - bundler\_without\_groups: an Array of additional Bundler groups to skip
 - database\_master\_role: if a role name is provided, a Chef search will be run to find a node with the role in the same environment as the current role. If a node is found, its IP address will be used when rendering the `database.yml` file, but see the "Database block parameters" section below
 - database\_template: the name of the template that will be rendered to create the `database.yml` file; if specified it will be looked up in the application cookbook. Defaults to "database.yml.erb" from this cookbook
