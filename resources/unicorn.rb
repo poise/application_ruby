@@ -31,6 +31,8 @@ attribute :bundler, :kind_of => [TrueClass, FalseClass, NilClass], :default => n
 attribute :bundle_command, :kind_of => [String, NilClass], :default => nil
 attribute :environment, :kind_of => Hash, :default => {}
 attribute :pid, :kind_of => String, :default => nil
+attribute :stderr_path, :kind_of => String, :default => nil
+attribute :stdout_path, :kind_of => String, :default => nil
 
 def options(*args, &block)
   @options ||= Mash[:tcp_nodelay => true, :backlog => 100]
