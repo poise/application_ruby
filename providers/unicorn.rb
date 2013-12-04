@@ -82,6 +82,7 @@ action :before_restart do
 
     cookbook 'application_ruby'
     options(
+      :ruby_path => new_resource.ruby_path,
       :app => new_resource,
       :bundler => new_resource.bundler,
       :bundle_command => new_resource.bundle_command,
