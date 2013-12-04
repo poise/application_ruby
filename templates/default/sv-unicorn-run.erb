@@ -2,6 +2,10 @@
 
 cd <%= @options[:app].path %>/current
 
+<%- if @options[:ruby_path] -%>
+  PATH=<%= @options[:ruby_path]%>:$PATH 
+<% end %>
+
 exec 2>&1
 exec <%= node[:runit][:chpst_bin] %> \
   -u <%= @options[:app].owner %>:<%= @options[:app].group %> \
