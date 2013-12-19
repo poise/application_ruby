@@ -1,8 +1,10 @@
 #
+# Author:: Joseph Anthony Pasquale Holsten <joseph@josephholsten.com>
 # Author:: Noah Kantrowitz <noah@opscode.com>
 # Cookbook Name:: application_ruby
-# Provider:: rails
+# Provider:: sinatra
 #
+# Copyright:: 2013, Joseph Anthony Pasquale Holsten <joseph@josephholsten.com>
 # Copyright:: 2011-2012, Opscode, Inc <legal@opscode.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +33,7 @@ action :before_compile do
   end
 
   new_resource.environment.merge!({
-    "RAILS_ENV" => new_resource.environment_name,
+    "RACK_ENV" => new_resource.environment_name,
   }) { |k, v1, v2| v1 }  # user's environment settings will override
 
   if new_resource.use_omnibus_ruby
@@ -41,31 +43,17 @@ action :before_compile do
     }) { |k, v1, v2| v1 }  # user's environment settings will override
   end
 
-  new_resource.symlink_before_migrate.update({
-    "database.yml" => "config/database.yml"
-  })
-
-
-  if new_resource.symlink_logs
-    new_resource.purge_before_symlink.push("log")
-    new_resource.symlinks.update({"log" => "log"})
-  end
-
 end
 
 action :before_deploy do
 
-  new_resource.environment['RAILS_ENV'] = new_resource.environment_name
+  new_resource.environment['RACK_ENV'] = new_resource.environment_name
 
   install_gems
-
-  create_database_yml
 
 end
 
 action :before_migrate do
-
-  symlink_logs if new_resource.symlink_logs
 
   if new_resource.bundler
     Chef::Log.info "Running bundle install"
@@ -87,27 +75,14 @@ action :before_migrate do
     common_groups -= [new_resource.environment_name]
     common_groups = common_groups.join(' ')
     bundler_deployment = new_resource.bundler_deployment
-    bundle_options = new_resource.bundle_options
     if bundler_deployment.nil?
       # Check for a Gemfile.lock
       bundler_deployment = ::File.exists?(::File.join(new_resource.release_path, "Gemfile.lock"))
     end
     command = "#{bundle_command} install --path=vendor/bundle --without #{common_groups}"
     command += " --deployment" if bundler_deployment
-    command += " #{bundle_options}" if bundle_options
+    command += " #{bundle_options}" if new_resource.bundle_options
     execute command do
-      cwd new_resource.release_path
-      user new_resource.owner
-      environment new_resource.environment
-    end
-  else
-    # chef runs before_migrate, then symlink_before_migrate symlinks, then migrations,
-    # yet our before_migrate needs database.yml to exist (and must complete before
-    # migrations).
-    #
-    # maybe worth doing run_symlinks_before_migrate before before_migrate callbacks,
-    # or an add'l callback.
-    execute "(ln -s ../../../shared/database.yml config/database.yml && rake gems:install); rm config/database.yml" do
       cwd new_resource.release_path
       user new_resource.owner
       environment new_resource.environment
@@ -131,20 +106,6 @@ action :before_symlink do
         Chef::Log.info("Migrations were run, removing role[#{new_resource.name}_run_migrations]")
         node.run_list.remove("role[#{new_resource.name}_run_migrations]")
       end
-    end
-  end
-
-  if new_resource.precompile_assets.nil?
-    new_resource.precompile_assets ::File.exists?(::File.join(new_resource.release_path, "config", "assets.yml"))
-  end
-
-  if new_resource.precompile_assets
-    command = "rake assets:precompile"
-    command = "#{bundle_command} exec #{command}" if new_resource.bundler
-    execute command do
-      cwd new_resource.release_path
-      user new_resource.owner
-      environment new_resource.environment
     end
   end
 
@@ -176,39 +137,5 @@ def install_gems
       source src if src
       version ver if ver && ver.length > 0
     end
-  end
-end
-
-def create_database_yml
-  host = new_resource.find_database_server(new_resource.database_master_role)
-
-  template "#{new_resource.path}/shared/database.yml" do
-    source new_resource.database_template || "database.yml.erb"
-    cookbook new_resource.database_template ? new_resource.cookbook_name.to_s : "application_ruby"
-    owner new_resource.owner
-    group new_resource.group
-    mode "644"
-    variables(
-      :host => host,
-      :database => new_resource.database,
-      :rails_env => new_resource.environment_name
-    )
-  end
-end
-
-def symlink_logs
-  resource = new_resource
-
-  directory "#{resource.path}/shared/log" do
-    owner resource.owner
-    group resource.group
-  end
-
-  logrotate_app resource.name do
-    cookbook "logrotate"
-    path "#{resource.path}/shared/#{resource.environment_name}.log"
-    frequency "daily"
-    rotate 30
-    create "666 #{resource.owner} #{resource.group}"
   end
 end
