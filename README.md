@@ -1,5 +1,4 @@
-Description
-===========
+# Description
 
 This cookbook is designed to be able to describe and deploy Ruby web applications. Currently supported:
 
@@ -12,8 +11,7 @@ Note that this cookbook provides the Ruby-specific bindings for the `application
 
 Other application stacks may be supported at a later date.
 
-Requirements
-============
+# Requirements
 
 Chef 0.10.0 or higher required (for Chef environment use).
 
@@ -25,13 +23,11 @@ The following Opscode cookbooks are dependencies:
 * runit
 * unicorn
 
-Resources/Providers
-==========
+# Resources/Providers
 
 The LWRPs provided by this cookbook are not meant to be used by themselves; make sure you are familiar with the `application` cookbook before proceeding.
 
-rails
-------
+## rails
 
 The `rails` sub-resource LWRP deals with deploying Ruby on Rails webapps from an SCM repository. It uses the `deploy_revision` LWRP to perform the bulk of its tasks, and many concepts and parameters map directly to it. Check the documentation for `deploy_revision` for more information.
 
@@ -45,47 +41,49 @@ When running Bundler, unnecessary groups will be skipped. The list of groups to 
 
 For example, for a node running in the `production` Chef environment, and given:
 
-    bundler_without_groups ["mysql"]
+```ruby
+bundler_without_groups ["mysql"]
+```
 
 Bundler will be run with:
 
-    bundle install --without development test cucumber staging mysql
+```ruby
+bundle install --without development test cucumber staging mysql
+```
 
-# Attribute Parameters
+### Attribute Parameters
 
 - gems: an Array of gems to install
 - bundler: if true, `bundler` will always be used; if false it will never be. Defaults to true if `gems` includes bundler
-- bundle\_command: The command to execute when calling bundler commands.  Useful for specifing alternate commands such as RVM wrappers.  Defaults to `bundle`.
-- bundle\_options: additional options which will be appended to the end of the `bundle` command string. Useful for capturing the output to a file using the tee command
-e.g. `bundle_options "2>&1 | tee -a \some\log\file.log"` 
-- bundler\_deployment: if true, Bundler will be run with the `--deployment` options. Defaults to true if a `Gemfile.lock` is present
-- bundler\_without\_groups: an Array of additional Bundler groups to skip
-- database\_master\_role: if a role name is provided, a Chef search will be run to find a node with the role in the same environment as the current role. If a node is found, its IP address will be used when rendering the `database.yml` file, but see the "Database block parameters" section below
-- database\_template: the name of the template that will be rendered to create the `database.yml` file; if specified it will be looked up in the application cookbook. Defaults to "database.yml.erb" from this cookbook
+- bundle_command: The command to execute when calling bundler commands.  Useful for specifing alternate commands such as RVM wrappers.  Defaults to `bundle`.
+- bundle_options: additional options which will be appended to the end of the `bundle` command string. Useful for capturing the output to a file using the tee command
+e.g. `bundle_options "2>&1 | tee -a \some\log\file.log"`
+- bundler_deployment: if true, Bundler will be run with the `--deployment` options. Defaults to true if a `Gemfile.lock` is present
+- bundler_without_groups: an Array of additional Bundler groups to skip
+- database_master_role: if a role name is provided, a Chef search will be run to find a node with the role in the same environment as the current role. If a node is found, its IP address will be used when rendering the `database.yml` file, but see the "Database block parameters" section below
+- database_template: the name of the template that will be rendered to create the `database.yml` file; if specified it will be looked up in the application cookbook. Defaults to "database.yml.erb" from this cookbook
 - database: a block containing additional parameters for configuring the database connection
-- precompile\_assets: if true, precompile assets for the Rails 3 asset pipeline. The default is nil, in which case we will try to autodetect whether the pipeline is in use by looking for `config/assets.yml`
+- precompile_assets: if true, precompile assets for the Rails 3 asset pipeline. The default is nil, in which case we will try to autodetect whether the pipeline is in use by looking for `config/assets.yml`
 
-# Database and memcached block parameters
+### Database and memcached block parameters
 
 The database and memcached blocks can accept any method, which will result in an entry being created in the `@database` and `@memcached_envs` Hashes which are passed to the respective templates. See Usage below for more information.
 
-passenger\_apache2
-------------------
+## passenger_apache2
 
 The `passenger_apache2` sub-resource LWRP configures Apache 2 with Passenger to run the application.
 
-# Attribute Parameters
+### Attribute Parameters
 
-- server\_aliases: an Array of server aliases
-- webapp\_template: the template to render to create the virtual host configuration. Defaults to "#{application name}.conf.erb"
+- server_aliases: an Array of server aliases
+- webapp_template: the template to render to create the virtual host configuration. Defaults to "#{application name}.conf.erb"
 - params: an Hash of extra parameters that will be passed to the template
 
-unicorn
--------
+## unicorn
 
 The `unicorn` sub-resource LWRP configures Unicorn to run the application.
 
-# Attribute Parameters
+### Attribute Parameters
 
 - bundler: if true, Unicorn will be run with `bundle exec`; if false it will be installed and run from the default gem path. Defaults to inheriting this setting from the rails LWRP
 - preload_app: passed to the `unicorn_config` LWRP
@@ -104,86 +102,95 @@ The `unicorn` sub-resource LWRP configures Unicorn to run the application.
 - unicorn_command_line: passed to the `unicorn_config` LWRP
 - copy_on_write: passed to the `unicorn_config` LWRP
 - enable_stats: passed to the `unicorn_config` LWRP
+- runit_cookbook: when defined, uses `sv-unicorn-run.erb` and `sv-unicorn-log-run.erb` in specified cookbook instead of this one
+- runit_options: hash passed to the `sv-unicorn-run.erb` and `sv-unicorn-log-run.erb` templates (access with `@options[:my_key]`)
 
-memcached
----------
+## memcached
 
 The `memcached` sub-resource LWRP manages configuration for a Rails-compatible Memcached client.
 
-# Attribute Parameters
+### Attribute Parameters
 
 - role: a Chef search will be run to find a node with the role in the same environment as the current node. If a node is found, its IP address will be used when rendering the `memcached.yml` file.
 - options: a block containing additional parameters for configuring the memcached client
 
-Usage
-=====
+# Usage
 
 A sample application that needs a database connection:
 
-    application "redmine" do
-      path "/usr/local/www/redmine"
+```ruby
+application "redmine" do
+  path "/usr/local/www/redmine"
 
-      rails do
-        database do
-          database "redmine"
-          username "redmine"
-          password "awesome_password"
-        end
-        database_master_role "redmine_database_master"
-      end
-
-      passenger_apache2 do
-      end
+  rails do
+    database do
+      database "redmine"
+      username "redmine"
+      password "awesome_password"
     end
+    database_master_role "redmine_database_master"
+  end
+
+  passenger_apache2 do
+  end
+end
+```
 
 You can invoke any method on the database block:
 
-    application "my-app" do
-      path "..."
-      repository "..."
-      revision "..."
+```ruby
+application "my-app" do
+  path "..."
+  repository "..."
+  revision "..."
 
-      rails do
-        database_master_role "my-app_database_master"
-        database do
-          database 'name'
-          quorum 2
-          replicas %w[Huey Dewey Louie]
-        end
-      end
+  rails do
+    database_master_role "my-app_database_master"
+    database do
+      database 'name'
+      quorum 2
+      replicas %w[Huey Dewey Louie]
     end
+  end
+end
+```
 
 The corresponding entries will be passed to the context template:
 
-    <%= @database['quorum'] %>
-    <%= @database['replicas'].join(',') %>
+```ruby
+<%= @database['quorum'] %>
+<%= @database['replicas'].join(',') %>
+```
 
 A sample application that connects to memcached:
 
-    application "my-app" do
-      path "..."
-      repository "..."
-      revision "..."
+```ruby
+application "my-app" do
+  path "..."
+  repository "..."
+  revision "..."
 
-      memcached do
-        role "memcached_master"
-        options do
-          ttl 1800
-          memory 256
-        end
-      end
+  memcached do
+    role "memcached_master"
+    options do
+      ttl 1800
+      memory 256
     end
+  end
+end
+```
 
 This will generate a config/memcached.yml file:
 
-    production:
-      ttl: 1800
-      memory: 256
-      servers:
-        - 192.168.0.10:11211
+```yaml
+production:
+  ttl: 1800
+  memory: 256
+  servers:
+    - 192.168.0.10:11211
+```
 
-License and Author
-==================
+# License and Author
 
 Author:: Adam Jacob (<adam@opscode.com>)
 Author:: Andrea Campi (<andrea.campi@zephirworks.com.com>)

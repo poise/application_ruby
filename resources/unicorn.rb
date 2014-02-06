@@ -38,6 +38,8 @@ attribute :stdout_path, :kind_of => [String, NilClass], :default => nil
 attribute :unicorn_command_line, :kind_of => [String, NilClass], :default => nil
 attribute :copy_on_write, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :enable_stats, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :runit_cookbook, :kind_of => [String, NilClass], :default => nil
+attribute :runit_options, :kind_of => Hash, :default => {}
 
 def options(*args, &block)
   @options ||= Mash[:tcp_nodelay => true, :backlog => 100]
