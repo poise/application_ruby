@@ -100,6 +100,7 @@ action :before_migrate do
   if new_resource.migration_command.include?('rake') && !gem_names.include?('rake')
     gem_package "rake" do
       action :install
+      not_if{ "which rake" }
     end
   end
 
