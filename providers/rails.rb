@@ -93,7 +93,7 @@ action :before_migrate do
     end
     command = "#{bundle_command} install --path=vendor/bundle --without #{common_groups}"
     command += " --deployment" if bundler_deployment
-    command += " #{bundle_options}" if bundle_options
+    command += " #{new_resource.bundle_options}" if new_resource.bundle_options
     execute command do
       cwd new_resource.release_path
       user new_resource.owner

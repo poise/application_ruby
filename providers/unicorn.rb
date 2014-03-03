@@ -80,13 +80,15 @@ action :before_restart do
     owner new_resource.owner if new_resource.owner
     group new_resource.group if new_resource.group
 
-    cookbook 'application_ruby'
+    cookbook(new_resource.runit_cookbook || 'application_ruby')
     options(
-      :app => new_resource,
-      :bundler => new_resource.bundler,
-      :bundle_command => new_resource.bundle_command,
-      :rails_env => new_resource.environment_name,
-      :smells_like_rack => ::File.exists?(::File.join(new_resource.path, "current", "config.ru"))
+      {
+        :app => new_resource,
+        :bundler => new_resource.bundler,
+        :bundle_command => new_resource.bundle_command,
+        :rails_env => new_resource.environment_name,
+        :smells_like_rack => ::File.exists?(::File.join(new_resource.path, "current", "config.ru"))
+      }.merge(new_resource.runit_options)
     )
   end
 
