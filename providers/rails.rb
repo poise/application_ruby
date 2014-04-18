@@ -66,6 +66,7 @@ end
 action :before_migrate do
 
   symlink_logs if new_resource.symlink_logs
+  new_resource.environment['GIT_SSH'] = "#{new_resource.path}/deploy-ssh-wrapper" if new_resource.deploy_key
 
   if new_resource.bundler
     Chef::Log.info "Running bundle install"
