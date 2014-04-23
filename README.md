@@ -104,6 +104,7 @@ The `unicorn` sub-resource LWRP configures Unicorn to run the application.
 - unicorn_command_line: passed to the `unicorn_config` LWRP
 - copy_on_write: passed to the `unicorn_config` LWRP
 - enable_stats: passed to the `unicorn_config` LWRP
+- runit_template_cookbook: specify which cookbook to look for unicorn runit templates in
 
 memcached
 ---------
