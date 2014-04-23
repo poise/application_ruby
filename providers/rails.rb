@@ -168,10 +168,6 @@ def bundle_command
   new_resource.bundle_command
 end
 
-def bundle_options
-  new_resource.bundle_options
-end
-
 def install_gems
   new_resource.gems.each do |gem, opt|
     if opt.is_a?(Hash)
