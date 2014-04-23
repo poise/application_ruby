@@ -160,6 +160,10 @@ end
 
 protected
 
+def bundle_options
+  new_resource.bundle_options
+end
+
 def bundle_command
   new_resource.bundle_command
 end
