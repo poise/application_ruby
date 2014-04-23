@@ -118,6 +118,7 @@ action :before_migrate do
   if new_resource.migration_command.include?('rake') && !gem_names.include?('rake')
     gem_package "rake" do
       action :install
+      not_if{ "which rake" }
     end
   end
 
@@ -158,6 +159,10 @@ end
 
 
 protected
+
+def bundle_options
+  new_resource.bundle_options
+end
 
 def bundle_command
   new_resource.bundle_command
