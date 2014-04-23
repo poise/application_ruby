@@ -84,8 +84,8 @@ action :before_migrate do
       to "#{new_resource.path}/shared/vendor_bundle"
     end
     common_groups = %w{development test cucumber staging production}
-    common_groups += new_resource.bundler_without_groups
     common_groups -= [new_resource.environment_name]
+    common_groups += new_resource.bundler_without_groups
     common_groups = common_groups.join(' ')
     bundler_deployment = new_resource.bundler_deployment
     if bundler_deployment.nil?
