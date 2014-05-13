@@ -9,3 +9,6 @@
 <% if @database.has_key?('pool') %>
   pool: <%= @database['pool'] %>
 <% end %>
+<% if @database.has_key?('schema_search_path') %>
+  schema_search_path: <%= @database['schema_search_path'] %>
+<% end %>
