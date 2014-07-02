@@ -18,7 +18,16 @@
 # limitations under the License.
 #
 
+include Chef::DSL::IncludeRecipe
+
 action :before_compile do
+  unless new_resource.rvm_path.nil?
+    #Overwrite chef's symlinking of ruby to its embedded 1.9.3 to the version the client needs to run their app
+    execute "ln -sf #{ new_resource.rvm_path }/gems/#{ new_resource.rvm_ruby.nil? ? node['rvm']['default_ruby'] : new_resource.rvm_ruby }@global/bin/ruby_executable_hooks \
+    /usr/bin/ruby_executable_hooks \
+    && ln -sf #{ new_resource.rvm_path }/rubies/#{ new_resource.rvm_ruby.nil? ? node['rvm']['default_ruby'] : new_resource.rvm_ruby }/bin/ruby \
+    /usr/bin/ruby"
+  end
 
   if new_resource.bundler.nil?
     new_resource.bundler new_resource.gems.any? { |gem, ver| gem == 'bundler' }
@@ -66,7 +75,6 @@ end
 action :before_migrate do
 
   symlink_logs if new_resource.symlink_logs
-  new_resource.environment['GIT_SSH'] = "#{new_resource.path}/deploy-ssh-wrapper" if new_resource.deploy_key
 
   if new_resource.bundler
     Chef::Log.info "Running bundle install"
@@ -84,18 +92,16 @@ action :before_migrate do
       to "#{new_resource.path}/shared/vendor_bundle"
     end
     common_groups = %w{development test cucumber staging production}
-    common_groups -= [new_resource.environment_name]
     common_groups += new_resource.bundler_without_groups
+    common_groups -= [new_resource.environment_name]
     common_groups = common_groups.join(' ')
     bundler_deployment = new_resource.bundler_deployment
     if bundler_deployment.nil?
       # Check for a Gemfile.lock
       bundler_deployment = ::File.exists?(::File.join(new_resource.release_path, "Gemfile.lock"))
     end
-    command = "#{bundle_command} install --path=vendor/bundle --without #{common_groups}"
-    command += " --deployment" if bundler_deployment
-    command += " #{bundle_options}" if bundle_options
-    execute command do
+
+    execute "#{bundle_command} install --path=vendor/bundle #{bundler_deployment ? "--deployment " : ""}--without #{common_groups}" do
       cwd new_resource.release_path
       user new_resource.owner
       environment new_resource.environment
@@ -118,7 +124,6 @@ action :before_migrate do
   if new_resource.migration_command.include?('rake') && !gem_names.include?('rake')
     gem_package "rake" do
       action :install
-      not_if "which rake"
     end
   end
 
@@ -157,12 +162,7 @@ end
 action :after_restart do
 end
 
-
 protected
-
-def bundle_options
-  new_resource.bundle_options
-end
 
 def bundle_command
   new_resource.bundle_command
@@ -185,11 +185,7 @@ def install_gems
 end
 
 def create_database_yml
-  if new_resource.database.has_key?("host")
-    host = new_resource.database['host']
-  else
-    host = new_resource.find_database_server(new_resource.database_master_role)
-  end
+  host = new_resource.find_database_server(new_resource.database_master_role)
 
   template "#{new_resource.path}/shared/database.yml" do
     source new_resource.database_template || "database.yml.erb"
@@ -198,9 +194,9 @@ def create_database_yml
     group new_resource.group
     mode "644"
     variables(
-      :host => host,
-      :database => new_resource.database,
-      :rails_env => new_resource.environment_name
+      host:      host,
+      database:  new_resource.database,
+      rails_env: new_resource.environment_name
     )
   end
 end

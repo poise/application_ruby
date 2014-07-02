@@ -1,9 +1,6 @@
 <%= @rails_env %>:
   adapter: <%= @database['adapter'] %>
   host: <%= @host %>
-  <%- if @database['port'] -%>
-  port: <%= @database['port'] %>
-  <%- end -%>
   database: <%= @database['database'] %>
   username: <%= @database['username'] %>
   password: <%= @database['password'] %>
