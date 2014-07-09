@@ -33,6 +33,7 @@ attribute :bundle_command, :kind_of => [String, NilClass], :default => "bundle"
 attribute :precompile_assets, :kind_of => [NilClass, TrueClass, FalseClass], :default => nil
 attribute :use_omnibus_ruby, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :symlink_logs, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :before_bundle_recipes, kind_of: [Array, String, NilClass], default: nil
 
 def database(*args, &block)
   @database ||= Mash.new

@@ -73,6 +73,15 @@ action :before_deploy do
 end
 
 action :before_migrate do
+  if new_resource.before_bundle_recipes
+    if new_resource.before_bundle_recipes.is_a?(String)
+      include_recipe new_resource.before_bundle_recipes
+    else
+      new_resource.before_bundle_recipes.each do |recipe|
+        include_recipe recipe
+      end
+    end
+  end
 
   symlink_logs if new_resource.symlink_logs
 
@@ -130,7 +139,6 @@ action :before_migrate do
 end
 
 action :before_symlink do
-
   ruby_block "remove_run_migrations" do
     block do
       if node.role?("#{new_resource.name}_run_migrations")

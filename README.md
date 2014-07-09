@@ -17,7 +17,7 @@ Other application stacks may be supported at a later date.
 Requirements
 ============
 
-Chef 0.10.0 or higher required (for Chef environment use).
+Chef 11.0.0 or higher required (for Chef environment use).
 
 The following Opscode cookbooks are dependencies:
 
@@ -222,8 +222,10 @@ Author:: Adam Jacob (<adam@opscode.com>)
 Author:: Andrea Campi (<andrea.campi@zephirworks.com.com>)
 Author:: Joshua Timberman (<joshua@opscode.com>)
 Author:: Seth Chisamore (<schisamo@opscode.com>)
+Author:: Louis Alridge (<louis@hiplogiq.com>)
 
 Copyright 2009-2012, Opscode, Inc.
+Copyright 2014, Hiplogiq
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
