@@ -68,6 +68,7 @@ Bundler will be run with:
 - precompile\_assets: if true, precompile assets for the Rails 3 asset pipeline. The default is nil, in which case we will try to autodetect whether the pipeline is in use by looking for `config/assets.yml`
 - rvm_path: A string containing the path to the rvm installation you wish to use for the application Ex: "/home/deploy_user/.rvm"; Defaults to nil
 - rvm_ruby: A string containing the ruby version you want to use within the rvm installation Ex: "ruby-2.1.2"; Defaults to nil (will grab `node['rvm']['default_ruby']` instead)
+- before_bundle_recipes: A string or Array of strings containing the recipes you would like to run *before* bundle install is run (useful for setting env variables) Ex: `["nginx::my_custom_recipe", "MyCookbook::post_nginx_custom_recipe"]`
 
 # Database and memcached block parameters
 
@@ -137,6 +138,7 @@ The `unicorn` sub-resource LWRP configures Unicorn to run the application.
 - unicorn_command_line: passed to the `unicorn_config` LWRP
 - copy_on_write: passed to the `unicorn_config` LWRP
 - enable_stats: passed to the `unicorn_config` LWRP
+- runit_template_cookbook: specify which cookbook to look for unicorn runit templates in
 
 memcached
 ---------

@@ -84,6 +84,7 @@ action :before_migrate do
   end
 
   symlink_logs if new_resource.symlink_logs
+  new_resource.environment['GIT_SSH'] = "#{new_resource.path}/deploy-ssh-wrapper" if new_resource.deploy_key
 
   if new_resource.bundler
     Chef::Log.info "Running bundle install"
@@ -110,7 +111,10 @@ action :before_migrate do
       bundler_deployment = ::File.exists?(::File.join(new_resource.release_path, "Gemfile.lock"))
     end
 
-    execute "#{bundle_command} install --path=vendor/bundle #{bundler_deployment ? "--deployment " : ""}--without #{common_groups}" do
+    command = "#{bundle_command} install --path=vendor/bundle --without #{common_groups}"
+    command += " --deployment" if bundler_deployment
+    command += " #{bundle_options}" if bundle_options
+    execute command do
       cwd new_resource.release_path
       user new_resource.owner
       environment new_resource.environment
@@ -133,12 +137,14 @@ action :before_migrate do
   if new_resource.migration_command.include?('rake') && !gem_names.include?('rake')
     gem_package "rake" do
       action :install
+      not_if "which rake"
     end
   end
 
 end
 
 action :before_symlink do
+
   ruby_block "remove_run_migrations" do
     block do
       if node.role?("#{new_resource.name}_run_migrations")
@@ -172,6 +178,10 @@ end
 
 protected
 
+def bundle_options
+  new_resource.bundle_options
+end
+
 def bundle_command
   new_resource.bundle_command
 end
@@ -193,7 +203,11 @@ def install_gems
 end
 
 def create_database_yml
-  host = new_resource.find_database_server(new_resource.database_master_role)
+  if new_resource.database.has_key?("host")
+    host = new_resource.database['host']
+  else
+    host = new_resource.find_database_server(new_resource.database_master_role)
+  end
 
   template "#{new_resource.path}/shared/database.yml" do
     source new_resource.database_template || "database.yml.erb"
