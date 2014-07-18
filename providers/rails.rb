@@ -81,6 +81,8 @@ action :before_migrate do
       mode '0755'
     end
     link "#{new_resource.release_path}/vendor/bundle" do
+      owner new_resource.owner
+      group new_resource.group
       to "#{new_resource.path}/shared/vendor_bundle"
     end
     common_groups = %w{development test cucumber staging production}
