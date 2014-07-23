@@ -53,7 +53,7 @@ action :before_deploy do
       log_dir:        node['nginx']['log_dir'],
       server_socket_type: new_resource.server_socket_type
     )
-    if ::File.exists?("#{node['nginx']['dir']}/sites-enabled/#{ new_resource.application.name }.conf")
+    if ::File.exists?("#{node['nginx']['dir']}/sites-enabled/#{ new_resource.application.name }")
       notifies :reload, 'service[nginx]'
     end
   end
