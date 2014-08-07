@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: application_ruby
-# Resources:: passenger
+# Resources:: nginx
 #
-# Copyright 2012, ZephirWorks
+# Copyright 2014, Hiplogiq
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,3 +22,4 @@ include ApplicationCookbook::ResourceBase
 attribute :worker_processes, kind_of: Integer, default: 1
 attribute :server_aliases, kind_of: [Array, NilClass], default: nil
 attribute :server_socket_type, kind_of: String, default: "puma"
+attribute :internal_url, kind_of: [String, NilClass], default: nil

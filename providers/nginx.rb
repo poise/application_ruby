@@ -47,11 +47,12 @@ action :before_deploy do
     mode   '0644'
     cookbook 'application_ruby'
     variables(
-      server_aliases: new_resource.server_aliases,
-      name:           new_resource.name,
-      path:           new_resource.path,
-      log_dir:        node['nginx']['log_dir'],
-      server_socket_type: new_resource.server_socket_type
+      server_aliases:     new_resource.server_aliases,
+      name:               new_resource.application.name,
+      path:               new_resource.path,
+      log_dir:            node['nginx']['log_dir'],
+      internal_url:       new_resource.internal_url,
+      socket:             "unix:///var/www/vhosts/#{ new_resource.application.name }/shared/#{ new_resource.server_socket_type }/#{ new_resource.application.name }.sock"
     )
     if ::File.exists?("#{node['nginx']['dir']}/sites-enabled/#{ new_resource.application.name }")
       notifies :reload, 'service[nginx]'

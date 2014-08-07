@@ -14,7 +14,7 @@ server {
     proxy_set_header X-Forwarded-Proto $scheme;
     proxy_set_header Host $http_host;
     proxy_set_header X-Real-IP $remote_addr;
-    proxy_pass http://unix:///var/www/vhosts/<%= @name %>/shared/<%= @server_socket_type %>/<%= @name %>.sock;
+    proxy_pass http://<%= @internal_url.nil? ? @socket : @internal_url %>;
   }
 }
 

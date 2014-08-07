@@ -95,6 +95,7 @@ The `nginx` sub-resource LWRP configures Nginx to run the application.
 - worker_processes: The number of nginx workers available (defaults to 1)
 - server\_aliases: an Array of server aliases
 - server_socket_type: either "unicorn" or "puma", defaults to "puma"
+- internal_url: used for hitting internal addresses instead of a unix socket, defaults to nil, example: "127.0.0.1:3333"
 
 puma
 ----
