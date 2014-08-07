@@ -114,7 +114,7 @@ The `puma` sub-resource LWRP configures Puma to run the application.
 - stderr_redirect: Location of error logs, defaults to nil (writes to the [app_path]/shared/puma/stdout.log)
 - stdout_redirect: Location of standard logs, defaults to nil (writes to the [app_path]/shared/puma/stderr.log)
 - upstart: Tells the puma cookbook to create a .conf file in /etc/init that can be used by applications to interact with the puma daemon. Defaults to false
-
+- logrotate: Tells the puma cookbook to logrotate its default logs (or not) defaults to false
 unicorn
 -------
 

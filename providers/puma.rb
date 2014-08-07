@@ -75,6 +75,7 @@ action :before_restart do
     upstart new_resource.upstart
     on_worker_boot new_resource.on_worker_boot
     monit !new_resource.upstart
+    logrotate new_resource.logrotate
   end
 
   #puma-init scripts are created by puma cookbook already

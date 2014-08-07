@@ -32,6 +32,7 @@ attribute :stderr_redirect, kind_of: [String, NilClass], default: nil
 attribute :stdout_redirect, kind_of: [String, NilClass], default: nil
 attribute :on_worker_boot, kind_of: [String, NilClass], default: nil
 attribute :upstart, kind_of: [TrueClass, FalseClass], default: false
+attribute :logrotate, kind_of: [TrueClass, FalseClass], default: false
 
 #def options(*args, &block)
 #  @options ||= Mash[:tcp_nodelay => true, :backlog => 100]
