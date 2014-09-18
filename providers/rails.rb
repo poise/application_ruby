@@ -163,8 +163,9 @@ action :before_symlink do
 
       execute "remove_assets_before_precompile" do
         command "rm -rf ./public/assets"
-        cwd new_resource.release_path
+        cwd "#{ new_resource.path }/shared"
         user new_resource.owner
+        only_if "/usr/bin/test -d #{ new_resource.path }/shared/public && echo \"true\""
       end
     end
 

@@ -20,19 +20,19 @@
 
 include ApplicationCookbook::ResourceBase
 
-attribute :app_path, kind_of: String
-attribute :preload_app, kind_of: [TrueClass, FalseClass], default: false
-attribute :workers, kind_of: Integer, default: [node.fetch('cpu', {}).fetch('total', 1).to_i * 4, 8].min
-attribute :owner, kind_of: String, default: "deploy"
-attribute :bind, kind_of: [String, NilClass], default: nil
-attribute :bundler, kind_of: [TrueClass, FalseClass, NilClass], default: nil
-attribute :bundle_command, kind_of: [String, NilClass], default: nil
-attribute :pid, kind_of:  [String, NilClass], default: nil
-attribute :stderr_redirect, kind_of: [String, NilClass], default: nil
-attribute :stdout_redirect, kind_of: [String, NilClass], default: nil
-attribute :on_worker_boot, kind_of: [String, NilClass], default: nil
-attribute :upstart, kind_of: [TrueClass, FalseClass], default: false
-attribute :logrotate, kind_of: [TrueClass, FalseClass], default: false
+attribute :app_path, :kind_of => String
+attribute :preload_app, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :workers, :kind_of => Integer, :default => [node.fetch('cpu', {}).fetch('total', 1).to_i * 4, 8].min
+attribute :owner, :kind_of => String, :default => "deploy"
+attribute :bind, :kind_of => [String, NilClass], :default => nil
+attribute :bundler, :kind_of => [TrueClass, FalseClass, NilClass], :default => nil
+attribute :bundle_command, :kind_of => [String, NilClass], :default => nil
+attribute :pid, :kind_of =>  [String, NilClass], :default => nil
+attribute :stderr_redirect, :kind_of => [String, NilClass], :default => nil
+attribute :stdout_redirect, :kind_of => [String, NilClass], :default => nil
+attribute :on_worker_boot, :kind_of => [String, NilClass], :default => nil
+attribute :upstart, :kind_of => [TrueClass, FalseClass], :default => false
+attribute :logrotate, :kind_of => [TrueClass, FalseClass], :default => false
 
 #def options(*args, &block)
 #  @options ||= Mash[:tcp_nodelay => true, :backlog => 100]
