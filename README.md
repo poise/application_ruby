@@ -66,6 +66,7 @@ Bundler will be run with:
 - database\_template: the name of the template that will be rendered to create the `database.yml` file; if specified it will be looked up in the application cookbook. Defaults to "database.yml.erb" from this cookbook
 - database: a block containing additional parameters for configuring the database connection
 - precompile\_assets: if true, precompile assets for the Rails 3 asset pipeline. The default is nil, in which case we will try to autodetect whether the pipeline is in use by looking for `config/assets.yml`
+- remove\_assets\_before\_precompile: if true, removes the assets folder from the filesystem before precompiling (useful for asset_sync)
 - rvm_path: A string containing the path to the rvm installation you wish to use for the application Ex: "/home/deploy_user/.rvm"; Defaults to nil
 - rvm_ruby: A string containing the ruby version you want to use within the rvm installation Ex: "ruby-2.1.2"; Defaults to nil (will grab `node['rvm']['default_ruby']` instead)
 - before_bundle_recipes: A string or Array of strings containing the recipes you would like to run *before* bundle install is run (useful for setting env variables) Ex: `["nginx::my_custom_recipe", "MyCookbook::post_nginx_custom_recipe"]`

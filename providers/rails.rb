@@ -159,6 +159,15 @@ action :before_symlink do
   end
 
   if new_resource.precompile_assets
+    if new_resource.remove_assets_before_precompile
+
+      execute "remove_assets_before_precompile" do
+        command "rm -rf ./public/assets"
+        cwd new_resource.release_path
+        user new_resource.owner
+      end
+    end
+
     command = "rake assets:precompile"
     command = "#{bundle_command} exec #{command}" if new_resource.bundler
     execute command do

@@ -23,8 +23,8 @@ include ApplicationCookbook::ResourceBase
 attribute :database_master_role, :kind_of => [String, NilClass], :default => nil
 # Actually defaults to "database.yml.erb", but nil means it wasn't set by the user
 attribute :database_template, :kind_of => [String, NilClass], :default => nil
-attribute :rvm_path, kind_of: [String, NilClass], default: nil
-attribute :rvm_ruby, kind_of: [String, NilClass], default: nil
+attribute :rvm_path, :kind_of => [String, NilClass], default: nil
+attribute :rvm_ruby, :kind_of => [String, NilClass], default: nil
 attribute :gems, :kind_of => [Array, Hash], :default => []
 attribute :bundler, :kind_of => [NilClass, TrueClass, FalseClass], :default => nil
 attribute :bundler_deployment, :kind_of => [NilClass, TrueClass, FalseClass], :default => nil
@@ -32,9 +32,10 @@ attribute :bundler_without_groups, :kind_of => [Array], :default => []
 attribute :bundle_command, :kind_of => [String, NilClass], :default => "bundle"
 attribute :bundle_options, :kind_of => [String, NilClass], :default => nil
 attribute :precompile_assets, :kind_of => [NilClass, TrueClass, FalseClass], :default => nil
+attribute :remove_assets_before_precompile, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :use_omnibus_ruby, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :symlink_logs, :kind_of => [TrueClass, FalseClass], :default => false
-attribute :before_bundle_recipes, kind_of: [Array, String, NilClass], default: nil
+attribute :before_bundle_recipes, :kind_of => [Array, String, NilClass], default: nil
 
 def database(*args, &block)
   @database ||= Mash.new
