@@ -1,11 +1,14 @@
 <%= @rails_env %>:
   adapter: <%= @database['adapter'] %>
   host: <%= @host %>
-  <%- if @database['port'] -%>
-  port: <%= @database['port'] %>
-  <%- end -%>
+  port: <%= @database['port'] ? @database['port'] : 5432 %>
   database: <%= @database['database'] %>
   username: <%= @database['username'] %>
   password: <%= @database['password'] %>
   encoding: <%= @database.has_key?('encoding') ? @database['encoding'] : 'utf8' %>
   reconnect: true
+<%- if @database['params'] %>
+<%- @database['params'].each_pair do |key, val| %>
+  <%= key %>: <%= val %>
+<%- end %>
+<%- end %>

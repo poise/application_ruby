@@ -5,6 +5,8 @@ This cookbook is designed to be able to describe and deploy Ruby web application
 
 * Ruby on Rails
 * Apache 2 with Passenger
+* Nginx
+* Puma
 * Unicorn
 * Memcached client
 
@@ -24,6 +26,8 @@ The following Opscode cookbooks are dependencies:
 * passenger_apache2
 * runit
 * unicorn
+* puma
+* nginx
 
 Resources/Providers
 ==========
@@ -55,15 +59,17 @@ Bundler will be run with:
 
 - gems: an Array of gems to install
 - bundler: if true, `bundler` will always be used; if false it will never be. Defaults to true if `gems` includes bundler
-- bundle\_command: The command to execute when calling bundler commands.  Useful for specifing alternate commands such as RVM wrappers.  Defaults to `bundle`.
-- bundle\_options: additional options which will be appended to the end of the `bundle` command string. Useful for capturing the output to a file using the tee command
-e.g. `bundle_options "2>&1 | tee -a \some\log\file.log"` 
-- bundler\_deployment: if true, Bundler will be run with the `--deployment` options. Defaults to true if a `Gemfile.lock` is present
+- bundle_command: The command to execute when calling bundler commands.  Useful for specifing alternate commands such as RVM wrappers.  Defaults to `bundle`.
+- bundler_deployment: if true, Bundler will be run with the `--deployment` options. Defaults to true if a `Gemfile.lock` is present
 - bundler\_without\_groups: an Array of additional Bundler groups to skip
 - database\_master\_role: if a role name is provided, a Chef search will be run to find a node with the role in the same environment as the current role. If a node is found, its IP address will be used when rendering the `database.yml` file, but see the "Database block parameters" section below
 - database\_template: the name of the template that will be rendered to create the `database.yml` file; if specified it will be looked up in the application cookbook. Defaults to "database.yml.erb" from this cookbook
 - database: a block containing additional parameters for configuring the database connection
 - precompile\_assets: if true, precompile assets for the Rails 3 asset pipeline. The default is nil, in which case we will try to autodetect whether the pipeline is in use by looking for `config/assets.yml`
+- remove\_assets\_before\_precompile: if true, removes the assets folder from the filesystem before precompiling (useful for asset_sync)
+- rvm_path: A string containing the path to the rvm installation you wish to use for the application Ex: "/home/deploy_user/.rvm"; Defaults to nil
+- rvm_ruby: A string containing the ruby version you want to use within the rvm installation Ex: "ruby-2.1.2"; Defaults to nil (will grab `node['rvm']['default_ruby']` instead)
+- before_bundle_recipes: A string or Array of strings containing the recipes you would like to run *before* bundle install is run (useful for setting env variables) Ex: `["nginx::my_custom_recipe", "MyCookbook::post_nginx_custom_recipe"]`
 
 # Database and memcached block parameters
 
@@ -80,6 +86,36 @@ The `passenger_apache2` sub-resource LWRP configures Apache 2 with Passenger to 
 - webapp\_template: the template to render to create the virtual host configuration. Defaults to "#{application name}.conf.erb"
 - params: an Hash of extra parameters that will be passed to the template
 
+nginx
+-----
+
+The `nginx` sub-resource LWRP configures Nginx to run the application.
+
+# Attribute Paramaters
+
+- worker_processes: The number of nginx workers available (defaults to 1)
+- server\_aliases: an Array of server aliases
+- server_socket_type: either "unicorn" or "puma", defaults to "puma"
+- internal_url: used for hitting internal addresses instead of a unix socket, defaults to nil, example: "127.0.0.1:3333"
+
+puma
+----
+
+The `puma` sub-resource LWRP configures Puma to run the application.
+
+# Attribute Parameters
+
+- app_path: A string containing the top-level location of the app you wish to load, Ex: "/var/rails/my_test_app"
+- preload_app: passed to the `puma_config` LWRP
+- workers: number of workers (fetched from cpu data from ohai by default)
+- bind: the socket the puma server binds to.
+- bundler: if true, Unicorn will be run with `bundle exec`; if false it will be installed and run from the default gem path. Defaults to inheriting this setting from the rails LWRPClass], default: nil
+- bundle_command: the string that determines how bundle is executed. Defaults to "bundle":bundle_command: nil
+- pid: Location of puma pidfile.
+- stderr_redirect: Location of error logs, defaults to nil (writes to the [app_path]/shared/puma/stdout.log)
+- stdout_redirect: Location of standard logs, defaults to nil (writes to the [app_path]/shared/puma/stderr.log)
+- upstart: Tells the puma cookbook to create a .conf file in /etc/init that can be used by applications to interact with the puma daemon. Defaults to false
+- logrotate: Tells the puma cookbook to logrotate its default logs (or not) defaults to false
 unicorn
 -------
 
@@ -190,8 +226,10 @@ Author:: Adam Jacob (<adam@opscode.com>)
 Author:: Andrea Campi (<andrea.campi@zephirworks.com.com>)
 Author:: Joshua Timberman (<joshua@opscode.com>)
 Author:: Seth Chisamore (<schisamo@opscode.com>)
+Author:: Louis Alridge (<louis@hiplogiq.com>)
 
 Copyright 2009-2012, Opscode, Inc.
+Copyright 2014, Hiplogiq
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

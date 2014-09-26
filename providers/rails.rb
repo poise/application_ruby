@@ -18,7 +18,16 @@
 # limitations under the License.
 #
 
+include Chef::DSL::IncludeRecipe
+
 action :before_compile do
+  unless new_resource.rvm_path.nil?
+    #Overwrite chef's symlinking of ruby to its embedded 1.9.3 to the version the client needs to run their app
+    execute "ln -sf #{ new_resource.rvm_path }/gems/#{ new_resource.rvm_ruby.nil? ? node['rvm']['default_ruby'] : new_resource.rvm_ruby }@global/bin/ruby_executable_hooks \
+    /usr/bin/ruby_executable_hooks \
+    && ln -sf #{ new_resource.rvm_path }/rubies/#{ new_resource.rvm_ruby.nil? ? node['rvm']['default_ruby'] : new_resource.rvm_ruby }/bin/ruby \
+    /usr/bin/ruby"
+  end
 
   if new_resource.bundler.nil?
     new_resource.bundler new_resource.gems.any? { |gem, ver| gem == 'bundler' }
@@ -64,6 +73,15 @@ action :before_deploy do
 end
 
 action :before_migrate do
+  if new_resource.before_bundle_recipes
+    if new_resource.before_bundle_recipes.is_a?(String)
+      include_recipe new_resource.before_bundle_recipes
+    else
+      new_resource.before_bundle_recipes.each do |recipe|
+        include_recipe recipe
+      end
+    end
+  end
 
   symlink_logs if new_resource.symlink_logs
   new_resource.environment['GIT_SSH'] = "#{new_resource.path}/deploy-ssh-wrapper" if new_resource.deploy_key
@@ -84,14 +102,15 @@ action :before_migrate do
       to "#{new_resource.path}/shared/vendor_bundle"
     end
     common_groups = %w{development test cucumber staging production}
-    common_groups -= [new_resource.environment_name]
     common_groups += new_resource.bundler_without_groups
+    common_groups -= [new_resource.environment_name]
     common_groups = common_groups.join(' ')
     bundler_deployment = new_resource.bundler_deployment
     if bundler_deployment.nil?
       # Check for a Gemfile.lock
       bundler_deployment = ::File.exists?(::File.join(new_resource.release_path, "Gemfile.lock"))
     end
+
     command = "#{bundle_command} install --path=vendor/bundle --without #{common_groups}"
     command += " --deployment" if bundler_deployment
     command += " #{bundle_options}" if bundle_options
@@ -140,6 +159,16 @@ action :before_symlink do
   end
 
   if new_resource.precompile_assets
+    if new_resource.remove_assets_before_precompile
+
+      execute "remove_assets_before_precompile" do
+        command "rm -rf ./public/assets"
+        cwd "#{ new_resource.path }/shared"
+        user new_resource.owner
+        only_if "/usr/bin/test -d #{ new_resource.path }/shared/public && echo \"true\""
+      end
+    end
+
     command = "rake assets:precompile"
     command = "#{bundle_command} exec #{command}" if new_resource.bundler
     execute command do
@@ -156,7 +185,6 @@ end
 
 action :after_restart do
 end
-
 
 protected
 
@@ -198,9 +226,9 @@ def create_database_yml
     group new_resource.group
     mode "644"
     variables(
-      :host => host,
-      :database => new_resource.database,
-      :rails_env => new_resource.environment_name
+      host:      host,
+      database:  new_resource.database,
+      rails_env: new_resource.environment_name
     )
   end
 end
