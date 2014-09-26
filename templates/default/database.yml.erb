@@ -9,6 +9,6 @@
   reconnect: true
 <%- if @database['params'] %>
 <%- @database['params'].each_pair do |key, val| %>
-  <%= key %>: <% val %>
+  <%= key %>: <%= val %>
 <%- end %>
 <%- end %>
