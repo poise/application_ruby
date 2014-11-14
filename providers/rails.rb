@@ -82,7 +82,6 @@ action :before_migrate do
     end
 
     directory "#{new_resource.release_path}/config" do
-      puts "Derp2"
       owner new_resource.owner
       group new_resource.group
       mode '0755'
