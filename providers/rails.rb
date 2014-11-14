@@ -80,6 +80,14 @@ action :before_migrate do
       group new_resource.group
       mode '0755'
     end
+
+    directory "#{new_resource.release_path}/config" do
+      puts "Derp2"
+      owner new_resource.owner
+      group new_resource.group
+      mode '0755'
+    end
+
     link "#{new_resource.release_path}/vendor/bundle" do
       to "#{new_resource.path}/shared/vendor_bundle"
     end
