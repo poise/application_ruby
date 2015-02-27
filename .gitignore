@@ -1,0 +1,9 @@
+Gemfile.lock
+.kitchen/
+.kitchen.local.yml
+test/docker/
+coverage/
+pkg/
+.yardoc/
+doc/
+
