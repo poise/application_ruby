@@ -44,6 +44,7 @@ module PoiseApplicationRuby
       attribute(:user, kind_of: String)
       attribute(:binstubs, kind_of: [TrueClass, String])
       attribute(:development, equal_to: [true, false], default: false)
+      attribute(:without, kind_of: [Array, String])
       attribute(:gem_binary, kind_of: String) # HOW TO FIND THE DEFAULT?
       attribute(:bundler_version, kind_of: String)
 
@@ -85,6 +86,8 @@ module PoiseApplicationRuby
       # Parse out the value for Gem.bindir. This is so complicated to minimize
       # the required configuration on the resource combined with gem having
       # terrible output formats.
+      #
+      # @return [String]
       def gem_bindir
         cmd = shell_out!([new_resource.absolute_gem_binary, 'environment'])
         # Parse a line like:
@@ -94,6 +97,25 @@ module PoiseApplicationRuby
           matches.first
         else
           raise Error.new("Cannot find EXECUTABLE DIRECTORY: #{cmd.stdout}")
+        end
+      end
+
+      # Command line options for the bundle install.
+      #
+      # @return [Array<String>]
+      # @todo Add --jobs --retry --vendor
+      def bundler_options
+        [].tap do |opts|
+          if new_resource.binstubs
+            opts << "--binstubs" + (new_resource.binstubs.is_a?(String) ? "=#{new_resource.binstubs}" : '')
+          end
+          if new_resource.development
+            opts << '--development'
+          end
+          if new_resource.without
+            opts << '--without'
+            opts.insert(-1, *new_resource.without)
+          end
         end
       end
     end

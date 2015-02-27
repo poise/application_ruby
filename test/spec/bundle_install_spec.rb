@@ -23,13 +23,16 @@ describe PoiseApplicationRuby::BundleInstall do
   end # /describe PoiseApplicationRuby::BundleInstall::Resource
 
   describe PoiseApplicationRuby::BundleInstall::Provider do
+    let(:new_resource) { double() }
+    let(:provider) { described_class.new(new_resource, nil) }
+    subject { provider }
+
     describe '#gem_bin' do
       let(:new_resource) { double(absolute_gem_binary: '/usr/local/bin/gem') }
-      let(:provider) { described_class.new(new_resource, nil) }
       let(:gem_environment) { '' }
       subject { provider.send(:gem_bindir) }
       before do
-        expect(provider).to receive(:shell_out!).and_return(double(stdout: gem_environment))
+        expect(provider).to receive(:shell_out!).with(['/usr/local/bin/gem', 'environment']).and_return(double(stdout: gem_environment))
       end
 
       context 'with an Ubuntu 14.04 gem environment' do
@@ -105,7 +108,51 @@ EOH
       context 'with no executable directory' do
         it { expect { subject }.to raise_error(PoiseApplicationRuby::Error) }
       end # /context with no executable directory
-
     end # /describe #gem_bin
+
+    describe '#bundler_options' do
+      let(:default_stubs) { %i{binstubs development without jobs retry vendor}.inject({}) {|memo, v| memo[v] = nil; memo } }
+      subject { provider.send(:bundler_options) }
+
+      context 'with binstubs' do
+        let(:new_resource) { double(default_stubs.merge(binstubs: true)) }
+        it { is_expected.to eq %w{--binstubs} }
+      end # /context with binstubs
+
+      context 'with binstubs in a path' do
+        let(:new_resource) { double(default_stubs.merge(binstubs: 'bin')) }
+        it { is_expected.to eq %w{--binstubs=bin} }
+      end # /context with binstubs in a path
+
+      context 'with development' do
+        let(:new_resource) { double(default_stubs.merge(development: true)) }
+        it { is_expected.to eq %w{--development} }
+      end # /context with development
+
+      context 'with without groups' do
+        let(:new_resource) { double(default_stubs.merge(without: %w{development test})) }
+        it { is_expected.to eq %w{--without development test} }
+      end # /context with without groups
+
+      xcontext 'with jobs' do
+        let(:new_resource) { double(default_stubs.merge(jobs: 3)) }
+        it { is_expected.to eq %w{--jobs=3} }
+      end # /context with jobs
+
+      xcontext 'with retry' do
+        let(:new_resource) { double(default_stubs.merge(retry: 3)) }
+        it { is_expected.to eq %w{--retry=3} }
+      end # /context with jobs
+
+      xcontext 'with vendor' do
+        let(:new_resource) { double(default_stubs.merge(vendor: true)) }
+        it { is_expected.to eq %w{--cendor} }
+      end # /context with vendor
+
+      xcontext 'with vendor in a path' do
+        let(:new_resource) { double(default_stubs.merge(vendor: 'vendor')) }
+        it { is_expected.to eq %w{--vendor=vendor} }
+      end # /context with vendor in a path
+    end # /describe #bundler_options
   end # /describe PoiseApplicationRuby::BundleInstall::Provider
 end
