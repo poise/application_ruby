@@ -15,14 +15,14 @@
 #
 
 require 'spec_helper'
-require 'poise_application_ruby/bundle_install'
+require 'poise_application_ruby/resources/bundle_install'
 require 'poise_application_ruby/error'
 
-describe PoiseApplicationRuby::BundleInstall do
-  describe PoiseApplicationRuby::BundleInstall::Resource do
-  end # /describe PoiseApplicationRuby::BundleInstall::Resource
+describe PoiseApplicationRuby::Resources::BundleInstall do
+  describe PoiseApplicationRuby::Resources::BundleInstall::Resource do
+  end # /describe PoiseApplicationRuby::Resources::BundleInstall::Resource
 
-  describe PoiseApplicationRuby::BundleInstall::Provider do
+  describe PoiseApplicationRuby::Resources::BundleInstall::Provider do
     let(:new_resource) { double() }
     let(:provider) { described_class.new(new_resource, nil) }
     subject { provider }
@@ -159,5 +159,5 @@ EOH
         it { is_expected.to eq %w{--binstubs=bin --deployment --without test development} }
       end # /context with several options
     end # /describe #bundler_options
-  end # /describe PoiseApplicationRuby::BundleInstall::Provider
+  end # /describe PoiseApplicationRuby::Resources::BundleInstall::Provider
 end

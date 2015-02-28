@@ -14,7 +14,4 @@
 # limitations under the License.
 #
 
-require 'poise_application_ruby/resources'
-
-module PoiseApplicationRuby
-end
+require 'poise_application_ruby/resources/bundle_install'
