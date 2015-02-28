@@ -111,53 +111,100 @@ EOH
     end # /describe #gem_bin
 
     describe '#bundler_options' do
-      let(:default_stubs) { %i{binstubs deployment without jobs retry vendor}.inject({}) {|memo, v| memo[v] = nil; memo } }
+      let(:default_options) { %i{binstubs deployment without jobs retry vendor}.inject({}) {|memo, v| memo[v] = nil; memo } }
+      let(:options) { {} }
+      let(:new_resource) { double(default_options.merge(options)) }
       subject { provider.send(:bundler_options) }
 
       context 'with binstubs' do
-        let(:new_resource) { double(default_stubs.merge(binstubs: true)) }
+        let(:options) { {binstubs: true} }
         it { is_expected.to eq %w{--binstubs} }
       end # /context with binstubs
 
       context 'with binstubs in a path' do
-        let(:new_resource) { double(default_stubs.merge(binstubs: 'bin')) }
+        let(:options) { {binstubs: 'bin'} }
         it { is_expected.to eq %w{--binstubs=bin} }
       end # /context with binstubs in a path
 
       context 'with deployment' do
-        let(:new_resource) { double(default_stubs.merge(deployment: true)) }
+        let(:options) { {deployment: true} }
         it { is_expected.to eq %w{--deployment} }
       end # /context with deployment
 
       context 'with without groups' do
-        let(:new_resource) { double(default_stubs.merge(without: %w{development test})) }
+        let(:options) { {without: %w{development test}} }
         it { is_expected.to eq %w{--without development test} }
       end # /context with without groups
 
       context 'with jobs' do
-        let(:new_resource) { double(default_stubs.merge(jobs: 3)) }
+        let(:options) { {jobs: 3} }
         it { is_expected.to eq %w{--jobs=3} }
       end # /context with jobs
 
       context 'with retry' do
-        let(:new_resource) { double(default_stubs.merge(retry: 3)) }
+        let(:options) { {retry: 3} }
         it { is_expected.to eq %w{--retry=3} }
       end # /context with jobs
 
       context 'with vendor' do
-        let(:new_resource) { double(default_stubs.merge(vendor: true)) }
+        let(:options) { {vendor: true} }
         it { is_expected.to eq %w{--vendor} }
       end # /context with vendor
 
       context 'with vendor in a path' do
-        let(:new_resource) { double(default_stubs.merge(vendor: 'vendor')) }
+        let(:options) { {vendor: 'vendor'} }
         it { is_expected.to eq %w{--vendor=vendor} }
       end # /context with vendor in a path
 
       context 'with several options' do
-        let(:new_resource) { double(default_stubs.merge(deployment: true, binstubs: 'bin', without: %w{test development})) }
+        let(:options) { {deployment: true, binstubs: 'bin', without: %w{test development}} }
         it { is_expected.to eq %w{--binstubs=bin --deployment --without test development} }
       end # /context with several options
     end # /describe #bundler_options
+
+    describe '#bundler_command' do
+      subject { provider.send(:bundler_command) }
+      before do
+        allow(provider).to receive(:gem_bindir).and_return('/test')
+        allow(provider).to receive(:bundler_options).and_return(%w{--binstubs --deployment})
+      end
+      it { is_expected.to eq %w{/test/bundle install --binstubs --deployment} }
+    end # /describe #bundler_command
+
+    describe '#gemfile_path' do
+      let(:path) { '' }
+      let(:files) { [] }
+      let(:new_resource) { double(path: path) }
+      subject { provider.send(:gemfile_path) }
+      before do
+        allow(File).to receive(:file?).and_return(false)
+        files.each do |file|
+          allow(File).to receive(:file?).with(file).and_return(true)
+        end
+      end
+
+      context 'with a simple file' do
+        let(:path) { '/test/Gemfile' }
+        let(:files) { %w{/test/Gemfile} }
+        it { is_expected.to eq '/test/Gemfile' }
+      end # /context with a simple file
+
+      context 'with a folder' do
+        let(:path) { '/test' }
+        let(:files) { %w{/test/Gemfile} }
+        it { is_expected.to eq '/test/Gemfile' }
+      end # /context with a folder
+
+      context 'with a parent folder' do
+        let(:path) { '/test/inner' }
+        let(:files) { %w{/test/Gemfile} }
+        it { is_expected.to eq '/test/Gemfile' }
+      end # /context with a parent folder
+
+      context 'with no Gemfile' do
+        let(:path) { '/test/Gemfile' }
+        it { is_expected.to be_nil }
+      end # /context with no Gemfile
+    end # /describe #gemfile_path
   end # /describe PoiseApplicationRuby::Resources::BundleInstall::Provider
 end

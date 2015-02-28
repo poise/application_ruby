@@ -135,7 +135,30 @@ module PoiseApplicationRuby
           end
         end
 
+        # Command array to run when installing the Gemfile.
+        #
+        # @return [Array<String>]
         def bundler_command
+          [::File.join(gem_bindir, 'bundle'), 'install'] + bundler_options
+        end
+
+        # Find the absolute path to the Gemfile. This mirrors bundler's internal
+        # search logic by scanning up to parent folder as needed.
+        #
+        # @return [String]
+        def gemfile_path
+          path = ::File.expand_path(new_resource.path)
+          if ::File.file?(path)
+            # We got a path to a real file, use that.
+            path
+          else
+            # Walk back until path==dirname(path) meaning we are at the root
+            while path != (next_path = ::File.dirname(path))
+              possible_path = ::File.join(path, 'Gemfile')
+              return possible_path if ::File.file?(possible_path)
+              path = next_path
+            end
+          end
         end
       end
     end
