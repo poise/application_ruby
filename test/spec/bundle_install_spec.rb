@@ -20,12 +20,30 @@ require 'poise_application_ruby/error'
 
 describe PoiseApplicationRuby::Resources::BundleInstall do
   describe PoiseApplicationRuby::Resources::BundleInstall::Resource do
+    recipe do
+      bundle_install '/test/Gemfile'
+    end
+    before do
+      allow_any_instance_of(described_class).to receive(:which).with('gem').and_return('/test/bin/gem')
+    end
+
+    it { is_expected.to install_bundle_install('/test/Gemfile').with(gem_binary: '/test/bin/gem', absolute_gem_binary: '/test/bin/gem') }
+
+    # Just testing this for coverage of the update_bundle_install matcher
+    context 'with action :update' do
+      recipe do
+        bundle_install '/test/Gemfile' do
+          action :update
+        end
+      end
+
+        it { is_expected.to update_bundle_install('/test/Gemfile') }
+    end # /context with action :update
   end # /describe PoiseApplicationRuby::Resources::BundleInstall::Resource
 
   describe PoiseApplicationRuby::Resources::BundleInstall::Provider do
     let(:new_resource) { double() }
     let(:provider) { described_class.new(new_resource, nil) }
-    subject { provider }
 
     describe '#action_install' do
       it do
