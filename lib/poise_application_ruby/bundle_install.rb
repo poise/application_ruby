@@ -15,6 +15,7 @@
 #
 
 require 'chef/mixin/shell_out'
+require 'chef/mixin/which'
 require 'chef/provider'
 require 'chef/resource'
 require 'poise'
@@ -37,15 +38,19 @@ module PoiseApplicationRuby
     #   end
     class Resource < Chef::Resource
       include Poise
+      include Chef::Mixin::Which
       provides(:bundle_install)
       actions(:install)
 
       attribute(:path, name_attribute: true)
       attribute(:user, kind_of: String)
       attribute(:binstubs, kind_of: [TrueClass, String])
-      attribute(:development, equal_to: [true, false], default: false)
+      attribute(:vendor, kind_of: [TrueClass, String])
+      attribute(:deployment, equal_to: [true, false], default: false)
       attribute(:without, kind_of: [Array, String])
-      attribute(:gem_binary, kind_of: String) # HOW TO FIND THE DEFAULT?
+      attribute(:jobs, kind_of: [String, Integer])
+      attribute(:retry, kind_of: [String, Integer])
+      attribute(:gem_binary, kind_of: String, default: lazy { which('gem') })
       attribute(:bundler_version, kind_of: String)
 
       # Absolute path to the gem binary.
@@ -71,11 +76,13 @@ module PoiseApplicationRuby
 
       # Install bundler using the specified gem binary.
       def install_bundler
-        notifying_block do
-          gem_binary 'bundler' do
-            version new_resource.bundler_version
-            gem_binary new_resource.gem_binary
-          end
+        # This doesn't use the DSL to keep things simpler and so that a change
+        # in the bundler version doesn't trigger a notification on the resource.
+        Chef::Resource::GemPackage.new('bundler', run_context).tap do |r|
+          r.action(:update) unless new_resource.bundler_version
+          r.version(new_resource.bundler_version)
+          r.gem_binary(new_resource.absolute_gem_binary)
+          r.run_action(r.action)
         end
       end
 
@@ -103,14 +110,22 @@ module PoiseApplicationRuby
       # Command line options for the bundle install.
       #
       # @return [Array<String>]
-      # @todo Add --jobs --retry --vendor
       def bundler_options
         [].tap do |opts|
           if new_resource.binstubs
             opts << "--binstubs" + (new_resource.binstubs.is_a?(String) ? "=#{new_resource.binstubs}" : '')
           end
-          if new_resource.development
-            opts << '--development'
+          if new_resource.vendor
+            opts << "--vendor" + (new_resource.vendor.is_a?(String) ? "=#{new_resource.vendor}" : '')
+          end
+          if new_resource.deployment
+            opts << '--deployment'
+          end
+          if new_resource.jobs
+            opts << "--jobs=#{new_resource.jobs}"
+          end
+          if new_resource.retry
+            opts << "--retry=#{new_resource.retry}"
           end
           if new_resource.without
             opts << '--without'
@@ -118,6 +133,10 @@ module PoiseApplicationRuby
           end
         end
       end
+
+      def bundler_command
+      end
+
     end
   end
 end

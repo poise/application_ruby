@@ -111,7 +111,7 @@ EOH
     end # /describe #gem_bin
 
     describe '#bundler_options' do
-      let(:default_stubs) { %i{binstubs development without jobs retry vendor}.inject({}) {|memo, v| memo[v] = nil; memo } }
+      let(:default_stubs) { %i{binstubs deployment without jobs retry vendor}.inject({}) {|memo, v| memo[v] = nil; memo } }
       subject { provider.send(:bundler_options) }
 
       context 'with binstubs' do
@@ -124,35 +124,40 @@ EOH
         it { is_expected.to eq %w{--binstubs=bin} }
       end # /context with binstubs in a path
 
-      context 'with development' do
-        let(:new_resource) { double(default_stubs.merge(development: true)) }
-        it { is_expected.to eq %w{--development} }
-      end # /context with development
+      context 'with deployment' do
+        let(:new_resource) { double(default_stubs.merge(deployment: true)) }
+        it { is_expected.to eq %w{--deployment} }
+      end # /context with deployment
 
       context 'with without groups' do
         let(:new_resource) { double(default_stubs.merge(without: %w{development test})) }
         it { is_expected.to eq %w{--without development test} }
       end # /context with without groups
 
-      xcontext 'with jobs' do
+      context 'with jobs' do
         let(:new_resource) { double(default_stubs.merge(jobs: 3)) }
         it { is_expected.to eq %w{--jobs=3} }
       end # /context with jobs
 
-      xcontext 'with retry' do
+      context 'with retry' do
         let(:new_resource) { double(default_stubs.merge(retry: 3)) }
         it { is_expected.to eq %w{--retry=3} }
       end # /context with jobs
 
-      xcontext 'with vendor' do
+      context 'with vendor' do
         let(:new_resource) { double(default_stubs.merge(vendor: true)) }
-        it { is_expected.to eq %w{--cendor} }
+        it { is_expected.to eq %w{--vendor} }
       end # /context with vendor
 
-      xcontext 'with vendor in a path' do
+      context 'with vendor in a path' do
         let(:new_resource) { double(default_stubs.merge(vendor: 'vendor')) }
         it { is_expected.to eq %w{--vendor=vendor} }
       end # /context with vendor in a path
+
+      context 'with several options' do
+        let(:new_resource) { double(default_stubs.merge(deployment: true, binstubs: 'bin', without: %w{test development})) }
+        it { is_expected.to eq %w{--binstubs=bin --deployment --without test development} }
+      end # /context with several options
     end # /describe #bundler_options
   end # /describe PoiseApplicationRuby::BundleInstall::Provider
 end
