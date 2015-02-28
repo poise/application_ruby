@@ -86,7 +86,7 @@ module PoiseApplicationRuby
           # This doesn't use the DSL to keep things simpler and so that a change
           # in the bundler version doesn't trigger a notification on the resource.
           Chef::Resource::GemPackage.new('bundler', run_context).tap do |r|
-            r.action(:update) unless new_resource.bundler_version
+            r.action(:upgrade) unless new_resource.bundler_version
             r.version(new_resource.bundler_version)
             r.gem_binary(new_resource.absolute_gem_binary)
             r.run_action(r.action)

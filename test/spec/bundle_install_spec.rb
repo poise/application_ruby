@@ -27,6 +27,102 @@ describe PoiseApplicationRuby::Resources::BundleInstall do
     let(:provider) { described_class.new(new_resource, nil) }
     subject { provider }
 
+    describe '#action_install' do
+      it do
+        expect(provider).to receive(:install_bundler)
+        expect(provider).to receive(:run_bundler).with('install')
+        provider.action_install
+      end
+    end # /describe #action_install
+
+    describe '#action_update' do
+      it do
+        expect(provider).to receive(:install_bundler)
+        expect(provider).to receive(:run_bundler).with('update')
+        provider.action_update
+      end
+    end # /describe #action_update
+
+    describe '#install_bundler' do
+      subject { provider.send(:install_bundler) }
+      before do
+        allow(Chef::Resource::GemPackage).to receive(:new).and_wrap_original do |m, *args|
+          m.call(*args).tap do |r|
+            expect(r).to receive(:run_action)
+          end
+        end
+      end
+
+      context 'with defaults' do
+        let(:new_resource) { double(bundler_version: nil, absolute_gem_binary: 'gem') }
+        its(:action) { is_expected.to eq %i{upgrade} }
+        its(:version) { is_expected.to be_nil }
+        its(:gem_binary) { is_expected.to eq 'gem' }
+      end # /context with defaults
+
+      context 'with a specific version' do
+        let(:new_resource) { double(bundler_version: '1.0', absolute_gem_binary: 'gem') }
+        its(:action) { is_expected.to eq :install }
+        its(:version) { is_expected.to eq '1.0' }
+        its(:gem_binary) { is_expected.to eq 'gem' }
+      end # /context with a specific version
+    end # /describe #install_bundler
+
+    describe '#run_bundler' do
+      let(:bundle_output) { '' }
+      subject { provider.send(:run_bundler, nil) }
+      before do
+        allow(provider).to receive(:bundler_command).and_return(%w{bundle install})
+        allow(provider).to receive(:gemfile_path).and_return('Gemfile')
+        expect(provider).to receive(:shell_out!).with(%w{bundle install}, environment: {'BUNDLE_GEMFILE' => 'Gemfile'}).and_return(double(stdout: bundle_output))
+      end
+
+      context 'with a new gem' do
+        let(:bundle_output) { <<-EOH }
+Fetching gem metadata from https://rubygems.org/.......
+Fetching version metadata from https://rubygems.org/...
+Fetching dependency metadata from https://rubygems.org/..
+Resolving dependencies...
+Using rake 10.4.2
+Using addressable 2.3.7
+Installing launchy 2.4.3
+Using poise 1.1.0 from source at /Users/coderanger/src/poise
+Using poise-application 5.0.0 from source at /Users/coderanger/src/application
+Using poise-service 1.0.0 from source at /Users/coderanger/src/poise-service
+Using poise-application-ruby 4.0.0 from source at .
+Using yard-classmethods 1.0 from source at /Users/coderanger/src/yard-classmethods
+Using poise-boiler 1.0.0 from source at /Users/coderanger/src/poise-boiler
+Bundle complete! 7 Gemfile dependencies, 115 gems now installed.
+Use `bundle show [gemname]` to see where a bundled gem is installed.
+EOH
+        it do
+          expect(new_resource).to receive(:updated_by_last_action).with(true)
+          subject
+        end
+      end # /context with a new gem
+
+      context 'with existing gems' do
+        let(:bundle_output) { <<-EOH }
+Fetching gem metadata from https://rubygems.org/.......
+Fetching version metadata from https://rubygems.org/...
+Fetching dependency metadata from https://rubygems.org/..
+Resolving dependencies...
+Using rake 10.4.2
+Using addressable 2.3.7
+Using launchy 2.4.3
+Using poise 1.1.0 from source at /Users/coderanger/src/poise
+Using poise-application 5.0.0 from source at /Users/coderanger/src/application
+Using poise-service 1.0.0 from source at /Users/coderanger/src/poise-service
+Using poise-application-ruby 4.0.0 from source at .
+Using yard-classmethods 1.0 from source at /Users/coderanger/src/yard-classmethods
+Using poise-boiler 1.0.0 from source at /Users/coderanger/src/poise-boiler
+Bundle complete! 7 Gemfile dependencies, 115 gems now installed.
+Use `bundle show [gemname]` to see where a bundled gem is installed.
+EOH
+        it { subject }
+      end # /context with existing gems
+    end # /describe #run_bundler
+
     describe '#gem_bin' do
       let(:new_resource) { double(absolute_gem_binary: '/usr/local/bin/gem') }
       let(:gem_environment) { '' }
