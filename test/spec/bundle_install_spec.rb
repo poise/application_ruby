@@ -163,12 +163,22 @@ EOH
     end # /describe #bundler_options
 
     describe '#bundler_command' do
-      subject { provider.send(:bundler_command) }
+      let(:action) { '' }
+      subject { provider.send(:bundler_command, action) }
       before do
         allow(provider).to receive(:gem_bindir).and_return('/test')
         allow(provider).to receive(:bundler_options).and_return(%w{--binstubs --deployment})
       end
-      it { is_expected.to eq %w{/test/bundle install --binstubs --deployment} }
+
+      context 'with action install' do
+        let(:action) { 'install' }
+        it { is_expected.to eq %w{/test/bundle install --binstubs --deployment} }
+      end # /context with action install
+
+      context 'with action update' do
+        let(:action) { 'update' }
+        it { is_expected.to eq %w{/test/bundle update --binstubs --deployment} }
+      end # /context with action update
     end # /describe #bundler_command
 
     describe '#gemfile_path' do

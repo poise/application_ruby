@@ -138,8 +138,8 @@ module PoiseApplicationRuby
         # Command array to run when installing the Gemfile.
         #
         # @return [Array<String>]
-        def bundler_command
-          [::File.join(gem_bindir, 'bundle'), 'install'] + bundler_options
+        def bundler_command(command)
+          [::File.join(gem_bindir, 'bundle'), command] + bundler_options
         end
 
         # Find the absolute path to the Gemfile. This mirrors bundler's internal
