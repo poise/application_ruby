@@ -56,7 +56,7 @@ module PoiseApplicationRuby
 
         # Absolute path to the gem binary.
         def absolute_gem_binary
-          File.expand_path(gem_binary, path)
+          ::File.expand_path(gem_binary, path)
         end
       end
 
