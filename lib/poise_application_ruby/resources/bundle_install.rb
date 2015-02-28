@@ -41,7 +41,7 @@ module PoiseApplicationRuby
         include Poise
         include Chef::Mixin::Which
         provides(:bundle_install)
-        actions(:install)
+        actions(:install, :update)
 
         attribute(:path, name_attribute: true)
         attribute(:user, kind_of: String)
@@ -70,7 +70,13 @@ module PoiseApplicationRuby
         # Install bundler and the gems in the Gemfile.
         def action_install
           install_bundler
-          bundle_install
+          run_bundler('install')
+        end
+
+        # Install bundler and update the gems in the Gemfile.
+        def action_update
+          install_bundler
+          run_bundler('update')
         end
 
         private
@@ -88,7 +94,12 @@ module PoiseApplicationRuby
         end
 
         # Install the gems in the Gemfile.
-        def bundle_install
+        def run_bundler(command)
+          cmd = shell_out!(bundler_command(command), environment: {'BUNDLE_GEMFILE' => gemfile_path})
+          # Look for a line like 'Installing $gemname $version' to know if we did anything.
+          if cmd.stdout.include?('Installing')
+            new_resource.updated_by_last_action(true)
+          end
         end
 
         # Parse out the value for Gem.bindir. This is so complicated to minimize
