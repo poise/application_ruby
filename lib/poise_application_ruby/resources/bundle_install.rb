@@ -175,3 +175,15 @@ module PoiseApplicationRuby
     end
   end
 end
+
+# @todo Handle this inside Poise somehow
+if defined?(ChefSpec)
+  def install_bundle_install(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:bundle_install, :install, resource_name)
+  end
+
+  def update_bundle_install(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:bundle_install, :update, resource_name)
+  end
+end
+
