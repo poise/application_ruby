@@ -1,0 +1,8 @@
+---
+#<% require 'poise_boiler' %>
+<%= PoiseBoiler.kitchen %>
+
+suites:
+- name: default
+  run_list:
+  - recipe[poise_test]
