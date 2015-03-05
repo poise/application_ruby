@@ -90,7 +90,7 @@ module PoiseApplicationRuby
             r.action(:upgrade) unless new_resource.bundler_version
             r.version(new_resource.bundler_version)
             r.gem_binary(new_resource.absolute_gem_binary)
-            r.run_action(r.action)
+            r.run_action(*Array(r.action))
           end
         end
 
