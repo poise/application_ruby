@@ -96,6 +96,7 @@ module PoiseApplicationRuby
 
         # Install the gems in the Gemfile.
         def run_bundler(command)
+          return converge_by "Run bundle #{command}" if whyrun_mode?
           cmd = shell_out!(bundler_command(command), environment: {'BUNDLE_GEMFILE' => gemfile_path})
           # Look for a line like 'Installing $gemname $version' to know if we did anything.
           if cmd.stdout.include?('Installing')
