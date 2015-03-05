@@ -9,6 +9,8 @@ env:
   - USE_SYSTEM_GECODE=true
   - KITCHEN_LOCAL_YAML=.kitchen.travis.yml
   - secure: fI8c8oE/onISOF/DogRH8KsBsrHu/GOOk47lpoD7/CSrQpK5a7bup1WBktXsRGItL6xNFIQuFdQO2/jHEwiQjFhpCIp5jryCTIWsQkt1uNu0mutrd8u9ALhe+PIHPKGN4yN1P0hZXOxV4yVRY0QHtg8uAGKppI4SH3Zwev/mJOQ=
+  - secure: K3R3/mibEEGg4IdvwoZ5xWxdOghMY98bt9L6ywYfnlROyJMAzkMvqxj3fgRmDsoOKoVF1zE4tMd1OmJ2Utc4IzL+PNFOOMt7Py8DZ+BSxCj8HNvO+FbrNITYXxA1ofiy/vbLAm1Lx073Vq/KilTWr7L0i9DZmCweWHxv6SYPB9s=
+  - secure: RABf9d8Ahx6cJvPCQN4wDhi8+Zo3942WHsDF1EhQTjqQt/8gs/x92ddekj5JHYlcWVktchwhcKJa8G2FgDB2y0ejVZyFuvyxILXemDd8T4doUnNU2qh/t/ybrfUPqNCXNhSsTUYR0DIh0oIfxCtHFnLRIZVPSxrVpuNRH6ZX6do=
 before_install:
 - curl -o ~/gecode.tar.gz https://poise-gecode.s3.amazonaws.com/gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
 - tar xzf ~/gecode.tar.gz -C ~
