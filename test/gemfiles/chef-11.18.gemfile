@@ -1,2 +1,0 @@
-instance_eval(IO.read(File.expand_path('../../../Gemfile', __FILE__)))
-gem 'chef', '~> 11.18.0'

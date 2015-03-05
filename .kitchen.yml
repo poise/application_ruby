@@ -2,6 +2,9 @@
 #<% require 'poise_boiler' %>
 <%= PoiseBoiler.kitchen %>
 
+chef_versions:
+- 12
+
 suites:
 - name: bundle_install
   run_list:
