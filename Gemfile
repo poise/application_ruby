@@ -26,14 +26,12 @@ def dev_gem(name, path: nil, github: nil)
   if File.exist?(path)
     gem name, path: path
   else
-    github, branch = github.split('@', 2)
-    gem name, github: github, ref: branch || 'master'
+    gem name, github: github
   end
 end
 
 dev_gem 'halite'
 dev_gem 'poise'
 dev_gem 'poise-service'
-dev_gem 'poise-application', path: '../application', github: 'poise/application@kickstarter'
+dev_gem 'poise-application', path: '../application', github: 'poise/application'
 dev_gem 'poise-boiler'
-dev_gem 'yard-classmethods'
