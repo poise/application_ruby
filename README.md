@@ -5,6 +5,7 @@
 [![Cookbook Version](https://img.shields.io/cookbook/v/application_ruby.svg)](https://supermarket.chef.io/cookbooks/application_ruby)
 [![Code Climate](https://img.shields.io/codeclimate/github/poise/application_ruby.svg)](https://codeclimate.com/github/poise/application_ruby)
 [![Coverage](https://img.shields.io/codeclimate/coverage/github/poise/application_ruby.svg)](https://codeclimate.com/github/poise/application_ruby)
+[![Gemnasium](https://img.shields.io/gemnasium/poise/application_ruby.svg)](https://gemnasium.com/poise/application_ruby)
 [![License](https://img.shields.io/badge/license-Apache_2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 More info coming soon!
