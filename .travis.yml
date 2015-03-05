@@ -1,0 +1,30 @@
+---
+sudo: false
+cache: bundler
+language: ruby
+rvm:
+- 2.1.4
+env:
+  global:
+  - USE_SYSTEM_GECODE=true
+  - KITCHEN_LOCAL_YAML=.kitchen.travis.yml
+  - secure: fI8c8oE/onISOF/DogRH8KsBsrHu/GOOk47lpoD7/CSrQpK5a7bup1WBktXsRGItL6xNFIQuFdQO2/jHEwiQjFhpCIp5jryCTIWsQkt1uNu0mutrd8u9ALhe+PIHPKGN4yN1P0hZXOxV4yVRY0QHtg8uAGKppI4SH3Zwev/mJOQ=
+before_install:
+- curl -o ~/gecode.tar.gz https://poise-gecode.s3.amazonaws.com/gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
+- tar xzf ~/gecode.tar.gz -C ~
+- rm ~/gecode.tar.gz
+- bundle config build.dep_selector "--with-cflags=\"-I$HOME/gecode-3.7.3/include\"
+  --with-cppflags=\"-I$HOME/gecode-3.7.3/include\" --with-ldflags=\"-L$HOME/gecode-3.7.3/lib
+  -Wl,-rpath=$HOME/gecode-3.7.3/lib\""
+bundler_args: "--binstubs=$PWD/bin --jobs 3 --retry 3"
+script:
+- "./bin/rake spec"
+- "./bin/rake chef:foodcritic"
+- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then openssl rsa -in test/docker/docker.pem
+  -passin env:KITCHEN_DOCKER_PASS -out test/docker/docker.key; fi
+- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then wget https://get.docker.io/builds/Linux/x86_64/docker-latest
+  -O docker; fi
+- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then chmod +x docker; fi
+- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then ./bin/kitchen test -d always; fi
+gemfile:
+- test/gemfiles/chef-12.gemfile
