@@ -3,6 +3,6 @@
 <%= PoiseBoiler.kitchen %>
 
 suites:
-- name: default
+- name: bundle_install
   run_list:
-  - recipe[poise_test]
+  - recipe[application_ruby_test::bundle_install]

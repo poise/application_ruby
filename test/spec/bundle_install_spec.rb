@@ -137,6 +137,7 @@ Using poise-boiler 1.0.0 from source at /Users/coderanger/src/poise-boiler
 Bundle complete! 7 Gemfile dependencies, 115 gems now installed.
 Use `bundle show [gemname]` to see where a bundled gem is installed.
 EOH
+        # No-op to ensure #updated_by_last_action is not called.
         it { subject }
       end # /context with existing gems
     end # /describe #run_bundler
