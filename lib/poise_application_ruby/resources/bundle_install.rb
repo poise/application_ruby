@@ -66,6 +66,7 @@ module PoiseApplicationRuby
       class Provider < Chef::Provider
         include Poise
         include Chef::Mixin::ShellOut
+        provides(:bundle_install)
 
         # Install bundler and the gems in the Gemfile.
         def action_install
