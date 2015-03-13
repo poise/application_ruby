@@ -14,5 +14,20 @@
 # limitations under the License.
 #
 
-require 'poise_application_ruby/resources/bundle_install'
-require 'poise_application_ruby/resources/rackup'
+package 'ruby'
+gem_package 'rack'
+
+directory '/opt/rack1'
+
+file '/opt/rack1/config.ru' do
+  content <<-EOH
+use Rack::ContentLength
+run proc {|env| [200, {'Content-Type' => 'text/plain'}, ['Hello world']] }
+EOH
+end
+
+application '/opt/rack1' do
+  rackup do
+    port 8000
+  end
+end
