@@ -16,30 +16,30 @@
 
 package 'ruby'
 
-directory '/opt/test1'
+directory '/opt/bundle1'
 
-file '/opt/test1/Gemfile' do
+file '/opt/bundle1/Gemfile' do
   content <<-EOH
 source 'https://rubygems.org/'
 gem 'rake'
 EOH
 end
 
-bundle_install '/opt/test1/Gemfile'
+bundle_install '/opt/bundle1/Gemfile'
 
 # Nuke it if needed, tests for notifications require starting from scratch
-execute 'rm -rf /opt/test2' if File.exists?('/opt/test2')
+execute 'rm -rf /opt/bundle2' if File.exists?('/opt/bundle2')
 
-directory '/opt/test2'
+directory '/opt/bundle2'
 
-file '/opt/test2/Gemfile' do
+file '/opt/bundle2/Gemfile' do
   content <<-EOH
 source 'https://rubygems.org/'
 gem 'rake'
 EOH
 end
 
-file '/opt/test2/Gemfile.lock' do
+file '/opt/bundle2/Gemfile.lock' do
   content <<-EOH
 GEM
   remote: https://rubygems.org/
@@ -54,25 +54,25 @@ DEPENDENCIES
 EOH
 end
 
-file '/opt/test2/sentinel1' do
+file '/opt/bundle2/sentinel1' do
   action :nothing
   content ''
 end
 
-bundle_install '/opt/test2/Gemfile' do
+bundle_install '/opt/bundle2/Gemfile' do
   deployment true
   binstubs true
-  notifies :create, 'file[/opt/test2/sentinel1]', :immediately
+  notifies :create, 'file[/opt/bundle2/sentinel1]', :immediately
 end
 
-file '/opt/test2/sentinel2' do
+file '/opt/bundle2/sentinel2' do
   action :nothing
   content ''
 end
 
-bundle_install '/opt/test2/Gemfile again' do
-  path '/opt/test2/Gemfile'
+bundle_install '/opt/bundle2/Gemfile again' do
+  path '/opt/bundle2/Gemfile'
   deployment true
   binstubs true
-  notifies :create, 'file[/opt/test2/sentinel2]', :immediately
+  notifies :create, 'file[/opt/bundle2/sentinel2]', :immediately
 end

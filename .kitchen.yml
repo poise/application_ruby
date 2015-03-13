@@ -6,6 +6,7 @@ chef_versions:
 - 12
 
 suites:
-- name: bundle_install
+- name: default
   run_list:
+  - recipe[application_ruby_test]
   - recipe[application_ruby_test::bundle_install]
