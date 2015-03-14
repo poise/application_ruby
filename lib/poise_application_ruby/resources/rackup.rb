@@ -17,10 +17,10 @@
 require 'chef/provider'
 require 'chef/resource'
 require 'poise'
-require 'poise_application'
-require 'poise_service/resource'
+require 'poise_application/service_mixin'
 
-require 'poise_application_ruby/error'
+require 'poise_application_ruby/bundler_mixin'
+
 
 module PoiseApplicationRuby
   module Resources
@@ -28,53 +28,23 @@ module PoiseApplicationRuby
     # @since 4.0.0
     module Rackup
       class Resource < Chef::Resource
-        # base
-        #include Poise(parent: PoiseApplication::Resources::Application::Resource, parent_optional: true)
-        include Poise(parent: Chef::Resource::Application, parent_optional: true)
+        include PoiseApplication::ServiceMixin
         provides(:rackup)
-        actions(:enable, :disable, :restart)
 
-        # base
-        attribute(:path, kind_of: String, name_attribute: true)
-        # @todo Deal with this being nil
-        attribute(:service_name, kind_of: String, default: lazy { parent && parent.service_name })
-        attribute(:user, kind_of: [String, Integer], default: lazy { parent ? parent.owner : 'root' })
-
-        # sub
         attribute(:port, kind_of: [String, Integer], default: 80)
       end
 
       class Provider < Chef::Provider
-        # base
-        include Poise
+        include PoiseApplication::ServiceMixin
+        include PoiseApplicationRuby::BundlerMixin
         provides(:rackup)
-
-        # base
-        def action_enable
-          notify_if_service do
-            service_resource.run_action(:enable)
-          end
-        end
-
-        # base
-        def action_disable
-          notify_if_service do
-            service_resource.run_action(:disable)
-          end
-        end
-
-        # base
-        def action_restart
-          notify_if_service do
-            service_resource.run_action(:restart)
-          end
-        end
-
-        # @todo Add reload once poise-service supports it.
 
         private
 
-        # sub
+        # Find the path to the config.ru. If the resource path was to a
+        # directory, apparent /config.ru.
+        #
+        # @return [String]
         def configru_path
           @configru_path ||= if ::File.directory?(new_resource.path)
             ::File.join(new_resource.path, 'config.ru')
@@ -83,29 +53,11 @@ module PoiseApplicationRuby
           end
         end
 
-        # base
-        def notify_if_service(&block)
-          service_resource.updated_by_last_action(false)
-          block.call
-          new_resource.updated_by_last_action(true) if service_resource.updated_by_last_action?
-        end
-
-        # base
-        def service_resource
-          @service_resource ||= PoiseService::Resource.new(new_resource.name, run_context).tap do |r|
-            # Set some defaults based on the resource and possibly the app.
-            r.service_name(new_resource.service_name)
-            r.directory(::File.dirname(configru_path))
-            r.user(new_resource.user)
-            # Call the subclass hook for more specific settings.
-            service_options(r)
-          end
-        end
-
-        # abstract
-        def service_options(r)
-          # @todo handle gemfile/bundle exec here (via a mixin)
-          r.command("rackup --port #{new_resource.port}")
+        # (see PoiseApplication::ServiceMixin#service_options)
+        def service_options(resource)
+          resource.command("rackup --port #{new_resource.port}")
+          resource.directory(::File.dirname(configru_path))
+          bundle_service_options(resource)
         end
       end
     end
