@@ -20,16 +20,29 @@ require 'serverspec'
 set :backend, :exec
 
 describe 'rackup' do
-  describe port(8000) do
-    it { is_expected.to be_listening }
-  end
+  context '/opt/rack1' do
+    describe port(8000) do
+      it { is_expected.to be_listening }
+    end
 
-  describe process('rackup') do
-    it { is_expected.to be_running }
-  end
+    describe process('rackup') do
+      it { is_expected.to be_running }
+    end
 
-  describe 'HTTP response' do
-    subject { Net::HTTP.new('localhost', 8000).get('/').body }
-    it { is_expected.to eq 'Hello world' }
-  end
+    describe 'HTTP response' do
+      subject { Net::HTTP.new('localhost', 8000).get('/').body }
+      it { is_expected.to eq 'Hello world' }
+    end
+  end # /context /opt/rack1
+
+  context '/opt/rack2' do
+    describe port(8001) do
+      it { is_expected.to be_listening }
+    end
+
+    describe 'HTTP response' do
+      subject { Net::HTTP.new('localhost', 8001).get('/').body }
+      it { is_expected.to start_with '/opt/rack2' }
+    end
+  end # /context /opt/rack2
 end

@@ -17,17 +17,39 @@
 package 'ruby'
 gem_package 'rack'
 
-directory '/opt/rack1'
-
-file '/opt/rack1/config.ru' do
-  content <<-EOH
+application '/opt/rack1' do
+  file '/opt/rack1/config.ru' do
+    content <<-EOH
 use Rack::ContentLength
 run proc {|env| [200, {'Content-Type' => 'text/plain'}, ['Hello world']] }
 EOH
-end
+  end
 
-application '/opt/rack1' do
   rackup do
     port 8000
+  end
+end
+
+application '/opt/rack2' do
+  file '/opt/rack2/Gemfile' do
+    content <<-EOH
+source 'https://rubygems.org/'
+gem 'rack'
+EOH
+  end
+
+  file '/opt/rack2/config.ru' do
+    content <<-EOH
+use Rack::ContentLength
+run proc {|env| [200, {'Content-Type' => 'text/plain'}, [Rack::Builder.method(:app).source_location.first]] }
+EOH
+  end
+
+  bundle_install do
+    vendor true
+  end
+
+  rackup do
+    port 8001
   end
 end
