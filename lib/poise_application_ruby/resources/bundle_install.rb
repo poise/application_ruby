@@ -121,6 +121,13 @@ module PoiseApplicationRuby
           end
         end
 
+        # Return the absolute path to the correct bundle binary to run.
+        #
+        # @return [String]
+        def bundler_binary
+          @bundler_binary ||= ::File.join(gem_bindir, 'bundle')
+        end
+
         # Command line options for the bundle install.
         #
         # @return [Array<String>]
@@ -152,7 +159,7 @@ module PoiseApplicationRuby
         #
         # @return [Array<String>]
         def bundler_command(command)
-          [::File.join(gem_bindir, 'bundle'), command] + bundler_options
+          [bundler_binary, command] + bundler_options
         end
 
         # Find the absolute path to the Gemfile. This mirrors bundler's internal
@@ -160,19 +167,22 @@ module PoiseApplicationRuby
         #
         # @return [String]
         def gemfile_path
-          path = ::File.expand_path(new_resource.path)
-          if ::File.file?(path)
-            # We got a path to a real file, use that.
-            path
-          else
-            # Walk back until path==dirname(path) meaning we are at the root
-            while path != (next_path = ::File.dirname(path))
-              possible_path = ::File.join(path, 'Gemfile')
-              return possible_path if ::File.file?(possible_path)
-              path = next_path
+          @gemfile_path ||= begin
+            path = ::File.expand_path(new_resource.path)
+            if ::File.file?(path)
+              # We got a path to a real file, use that.
+              path
+            else
+              # Walk back until path==dirname(path) meaning we are at the root
+              while path != (next_path = ::File.dirname(path))
+                possible_path = ::File.join(path, 'Gemfile')
+                return possible_path if ::File.file?(possible_path)
+                path = next_path
+              end
             end
           end
         end
+
       end
     end
   end
