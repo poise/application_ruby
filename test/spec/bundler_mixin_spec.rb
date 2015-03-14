@@ -18,7 +18,7 @@ require 'spec_helper'
 require 'poise_application_ruby/bundler_mixin'
 
 
-describe PoiseApplicationRuby::BundlerMixin, :focus do
+describe PoiseApplicationRuby::BundlerMixin do
   let(:app_state) { Hash.new }
   let(:new_resource) { double(parent: double(app_state: app_state)) }
   let(:helper) do
