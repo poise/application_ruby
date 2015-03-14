@@ -263,12 +263,12 @@ EOH
 
       context 'with vendor' do
         let(:options) { {vendor: true} }
-        it { is_expected.to eq %w{--vendor} }
+        it { is_expected.to eq %w{--path=vendor/bundle} }
       end # /context with vendor
 
       context 'with vendor in a path' do
         let(:options) { {vendor: 'vendor'} }
-        it { is_expected.to eq %w{--vendor=vendor} }
+        it { is_expected.to eq %w{--path=vendor} }
       end # /context with vendor in a path
 
       context 'with several options' do

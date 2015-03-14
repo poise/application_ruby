@@ -137,7 +137,7 @@ module PoiseApplicationRuby
               opts << "--binstubs" + (new_resource.binstubs.is_a?(String) ? "=#{new_resource.binstubs}" : '')
             end
             if new_resource.vendor
-              opts << "--vendor" + (new_resource.vendor.is_a?(String) ? "=#{new_resource.vendor}" : '')
+              opts << "--path=" + (new_resource.vendor.is_a?(String) ? new_resource.vendor : 'vendor/bundle')
             end
             if new_resource.deployment
               opts << '--deployment'
