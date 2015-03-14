@@ -19,6 +19,7 @@ require 'chef/mixin/which'
 require 'chef/provider'
 require 'chef/resource'
 require 'poise'
+require 'poise_application/resources/application'
 
 require 'poise_application_ruby/error'
 
@@ -38,7 +39,7 @@ module PoiseApplicationRuby
       #     gem_path '/usr/local/bin/gem'
       #   end
       class Resource < Chef::Resource
-        include Poise
+        include Poise(parent: Chef::Resource::Application, parent_optional: true)
         include Chef::Mixin::Which
         provides(:bundle_install)
         actions(:install, :update)
@@ -72,12 +73,14 @@ module PoiseApplicationRuby
         def action_install
           install_bundler
           run_bundler('install')
+          set_state
         end
 
         # Install bundler and update the gems in the Gemfile.
         def action_update
           install_bundler
           run_bundler('update')
+          set_state
         end
 
         private
@@ -101,6 +104,13 @@ module PoiseApplicationRuby
           # Look for a line like 'Installing $gemname $version' to know if we did anything.
           if cmd.stdout.include?('Installing')
             new_resource.updated_by_last_action(true)
+          end
+        end
+
+        def set_state
+          if new_resource.parent
+            new_resource.parent.app_state[:bundler_gemfile] = gemfile_path
+            new_resource.parent.app_state[:bundler_binary] = bundler_binary
           end
         end
 
