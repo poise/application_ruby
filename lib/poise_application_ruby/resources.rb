@@ -16,3 +16,5 @@
 
 require 'poise_application_ruby/resources/bundle_install'
 require 'poise_application_ruby/resources/rackup'
+require 'poise_application_ruby/resources/thin'
+require 'poise_application_ruby/resources/unicorn'
