@@ -14,6 +14,24 @@
 # limitations under the License.
 #
 
-name 'application_ruby_test'
-depends 'application_ruby'
-depends 'build-essential'
+require 'net/http'
+
+require 'serverspec'
+set :backend, :exec
+
+
+describe 'sinatra' do
+  describe port(9000) do
+    it { is_expected.to be_listening }
+  end
+
+  describe '/' do
+    subject { Net::HTTP.new('localhost', 9000).get('/') }
+    its(:code) { is_expected.to eq '404' }
+  end
+
+  describe '/' do
+    subject { Net::HTTP.new('localhost', 9000).get('/hi') }
+    its(:body) { is_expected.to eq 'Hello World!' }
+  end
+end

@@ -29,7 +29,7 @@ module PoiseApplicationRuby
     module Rackup
       class Resource < Chef::Resource
         include PoiseApplication::ServiceMixin
-        provides(:rackup)
+        provides(:application_rackup)
 
         attribute(:port, kind_of: [String, Integer], default: 80)
       end
@@ -37,7 +37,7 @@ module PoiseApplicationRuby
       class Provider < Chef::Provider
         include PoiseApplication::ServiceMixin
         include PoiseApplicationRuby::BundlerMixin
-        provides(:rackup)
+        provides(:application_rackup)
 
         private
 
