@@ -19,9 +19,7 @@ include_recipe 'build-essential'
 package value_for_platform_family(debian: 'ruby-dev', rhel: 'ruby-devel')
 
 application '/opt/test_sinatra' do
-  git do
-    repository 'https://github.com/poise/test_sinatra.git'
-  end
+  git 'https://github.com/poise/test_sinatra.git'
   bundle_install do
     deployment true
   end

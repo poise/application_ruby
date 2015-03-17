@@ -15,5 +15,6 @@
 #
 
 name 'application_ruby_test'
+depends 'application_git'
 depends 'application_ruby'
 depends 'build-essential'
