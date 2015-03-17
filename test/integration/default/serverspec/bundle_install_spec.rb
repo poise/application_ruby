@@ -19,11 +19,18 @@ set :backend, :exec
 
 describe 'bundle_install' do
   describe 'system-level install' do
-    describe file('/usr/local/bin/rake') do
+    rake_binary = case os[:family]
+      when 'debian', 'ubuntu'
+        '/usr/local/bin/rake'
+      when 'redhat'
+        '/usr/bin/rake'
+      end
+
+    describe file(rake_binary) do
       it { is_expected.to be_a_file }
     end
 
-    describe command('/usr/local/bin/rake --version') do
+    describe command("#{rake_binary} --version") do
       its(:exit_status) { is_expected.to eq 0 }
     end
   end

@@ -30,4 +30,5 @@ group :test do
   cookbook 'application_ruby_test', path: 'test/cookbooks/application_ruby_test'
   cookbook 'apt'
   cookbook 'git'
+  cookbook 'poise-service-runit', gem: 'poise-service-runit'
 end

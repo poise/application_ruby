@@ -14,8 +14,28 @@
 # limitations under the License.
 #
 
+# There is a bug in Poise, this is a workaround
+if platform_family?('rhel')
+  include_recipe 'build-essential'
+end
+
 package 'ruby'
+
+if platform?('ubuntu') && node['platform_version'] == '12.04'
+  # For old Ubuntu
+  package 'rubygems'
+  package 'net-tools'
+end
+
+if platform_family?('rhel') && node['platform_version'].start_with?('6')
+  package 'rubygems'
+end
+
 gem_package 'rack'
+
+# Webrick on Ruby 1.8 and 1.9 doesn't exit on SIGTERM, so use SIGKILL instead.
+node.override['poise-service']['rack1']['control']['t'] = 'sv kill rack1'
+node.override['poise-service']['rack2']['control']['t'] = 'sv kill rack2'
 
 application '/opt/rack1' do
   file '/opt/rack1/config.ru' do
@@ -41,7 +61,7 @@ EOH
   file '/opt/rack2/config.ru' do
     content <<-EOH
 use Rack::ContentLength
-run proc {|env| [200, {'Content-Type' => 'text/plain'}, [Rack::Builder.method(:app).source_location.first]] }
+run proc {|env| [200, {'Content-Type' => 'text/plain'}, [caller.first]] }
 EOH
   end
 

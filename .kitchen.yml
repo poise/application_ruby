@@ -1,6 +1,6 @@
 ---
 #<% require 'poise_boiler' %>
-<%= PoiseBoiler.kitchen %>
+<%= PoiseBoiler.kitchen(platforms: %w{ubuntu centos-6.5}) %>
 
 suites:
 - name: default
