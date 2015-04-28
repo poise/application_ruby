@@ -6,5 +6,4 @@ suites:
 - name: default
   run_list:
   - recipe[application_ruby_test]
-  - recipe[application_ruby_test::bundle_install]
   - recipe[application_ruby_test::sinatra]
