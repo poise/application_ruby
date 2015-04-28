@@ -14,28 +14,15 @@
 # limitations under the License.
 #
 
-# There is a bug in Poise, this is a workaround
-if platform_family?('rhel')
-  include_recipe 'build-essential'
+# For netstat in serverspec.
+package 'net-tools'
+
+ruby_runtime 'any' do
+  provider :system
+  version ''
 end
 
-package 'ruby'
-
-if platform?('ubuntu') && node['platform_version'] == '12.04'
-  # For old Ubuntu
-  package 'rubygems'
-  package 'net-tools'
-end
-
-if platform_family?('rhel') && node['platform_version'].start_with?('6')
-  package 'rubygems'
-end
-
-gem_package 'rack'
-
-# Webrick on Ruby 1.8 and 1.9 doesn't exit on SIGTERM, so use SIGKILL instead.
-node.override['poise-service']['rack1']['control']['t'] = 'sv kill rack1'
-node.override['poise-service']['rack2']['control']['t'] = 'sv kill rack2'
+ruby_gem 'rack'
 
 application '/opt/rack1' do
   file '/opt/rack1/config.ru' do
