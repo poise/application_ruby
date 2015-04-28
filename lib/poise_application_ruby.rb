@@ -14,7 +14,9 @@
 # limitations under the License.
 #
 
-require 'poise_application_ruby/resources'
 
 module PoiseApplicationRuby
+  autoload :Resources, 'poise_application_ruby/resources'
+  autoload :RubyMixin, 'poise_application_ruby/ruby_mixin'
+  autoload :VERSION, 'poise_application_ruby/version'
 end
