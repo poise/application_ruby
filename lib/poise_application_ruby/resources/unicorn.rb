@@ -19,7 +19,7 @@ require 'chef/resource'
 require 'poise'
 require 'poise_application/service_mixin'
 
-require 'poise_application_ruby/bundler_mixin'
+require 'poise_application_ruby/ruby_mixin'
 
 
 module PoiseApplicationRuby
@@ -29,6 +29,7 @@ module PoiseApplicationRuby
     module Unicorn
       class Resource < Chef::Resource
         include PoiseApplication::ServiceMixin
+        include PoiseApplicationRuby::RubyMixin
         provides(:application_unicorn)
 
         attribute(:port, kind_of: [String, Integer], default: 80)
@@ -36,7 +37,7 @@ module PoiseApplicationRuby
 
       class Provider < Chef::Provider
         include PoiseApplication::ServiceMixin
-        include PoiseApplicationRuby::BundlerMixin
+        include PoiseApplicationRuby::RubyMixin
         provides(:application_unicorn)
 
         private
@@ -55,8 +56,8 @@ module PoiseApplicationRuby
 
         # (see PoiseApplication::ServiceMixin#service_options)
         def service_options(resource)
+          super
           resource.command("unicorn --port #{new_resource.port} #{configru_path}")
-          bundle_service_options(resource)
         end
       end
     end

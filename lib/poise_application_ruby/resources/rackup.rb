@@ -19,7 +19,7 @@ require 'chef/resource'
 require 'poise'
 require 'poise_application/service_mixin'
 
-require 'poise_application_ruby/bundler_mixin'
+require 'poise_application_ruby/ruby_mixin'
 
 
 module PoiseApplicationRuby
@@ -29,14 +29,18 @@ module PoiseApplicationRuby
     module Rackup
       class Resource < Chef::Resource
         include PoiseApplication::ServiceMixin
+        include PoiseApplicationRuby::RubyMixin
         provides(:application_rackup)
 
+        # @!attribute port
+        #   TCP port to listen on. Defaults to 80.
+        #   @return [String, Integer]
         attribute(:port, kind_of: [String, Integer], default: 80)
       end
 
       class Provider < Chef::Provider
         include PoiseApplication::ServiceMixin
-        include PoiseApplicationRuby::BundlerMixin
+        include PoiseApplicationRuby::RubyMixin
         provides(:application_rackup)
 
         private
@@ -53,11 +57,16 @@ module PoiseApplicationRuby
           end
         end
 
-        # (see PoiseApplication::ServiceMixin#service_options)
+        # Set up service options for rackup.
+        #
+        # @param resource [PoiseService::Resource] Service resource.
+        # @return [void]
         def service_options(resource)
+          super
           resource.command("rackup --port #{new_resource.port}")
           resource.directory(::File.dirname(configru_path))
-          bundle_service_options(resource)
+          # Older versions of rackup ignore all signals.
+          resource.stop_signal('KILL')
         end
       end
     end
