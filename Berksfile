@@ -24,6 +24,7 @@ cookbook 'poise', gem: 'poise'
 cookbook 'application', gem: 'poise-application'
 cookbook 'application_ruby', gem: 'poise-application-ruby'
 cookbook 'poise-service', gem: 'poise-service'
+cookbook 'poise-ruby', gem: 'poise-ruby'
 
 group :test do
   cookbook 'application_git', gem: 'poise-application-git'

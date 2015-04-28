@@ -33,6 +33,5 @@ dev_gem 'poise'
 dev_gem 'poise-application', path: '../application', github: 'poise/application'
 dev_gem 'poise-application-git', path: '../application_git', github: 'poise/application_git'
 dev_gem 'poise-boiler'
+dev_gem 'poise-ruby'
 dev_gem 'poise-service'
-dev_gem 'poise-service-runit'
-
