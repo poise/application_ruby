@@ -15,13 +15,7 @@ env:
   - secure: K3R3/mibEEGg4IdvwoZ5xWxdOghMY98bt9L6ywYfnlROyJMAzkMvqxj3fgRmDsoOKoVF1zE4tMd1OmJ2Utc4IzL+PNFOOMt7Py8DZ+BSxCj8HNvO+FbrNITYXxA1ofiy/vbLAm1Lx073Vq/KilTWr7L0i9DZmCweWHxv6SYPB9s=
 bundler_args: "--binstubs=$PWD/bin --jobs 3 --retry 3"
 script:
-- "./bin/rake spec"
-- "./bin/rake chef:foodcritic"
-- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then openssl rsa -in test/docker/docker.pem
-  -passin env:KITCHEN_DOCKER_PASS -out test/docker/docker.key; fi
-- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then wget https://get.docker.io/builds/Linux/x86_64/docker-latest
-  -O docker; fi
-- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then chmod +x docker; fi
-- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then ./bin/kitchen test -d always; fi
+- "./bin/rake travis"
 gemfile:
 - test/gemfiles/chef-12.gemfile
+- test/gemfiles/master.gemfile
