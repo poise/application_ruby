@@ -20,7 +20,7 @@ require 'serverspec'
 set :backend, :exec
 
 
-describe 'rails' do
+describe 'rails', if: File.exists?('/opt/test_rails') do
   describe port(9001) do
     it { is_expected.to be_listening }
   end
