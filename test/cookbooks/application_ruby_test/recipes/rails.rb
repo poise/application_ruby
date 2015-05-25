@@ -18,7 +18,7 @@ include_recipe 'build-essential'
 
 package value_for_platform_family(debian: 'ruby-dev', rhel: 'ruby-devel')
 package value_for_platform_family(debian: 'zlib1g-dev', rhel: 'zlib-devel')
-package value_for_platform_family(debian: 'libsqlite3-dev', rhel: 'sqlite3-devel')
+package value_for_platform_family(debian: 'libsqlite3-dev', rhel: 'sqlite-devel')
 
 application '/opt/test_rails' do
   git 'https://github.com/poise/test_rails.git'
