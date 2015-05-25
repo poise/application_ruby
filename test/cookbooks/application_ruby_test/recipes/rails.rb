@@ -24,6 +24,7 @@ application '/opt/test_rails' do
   git 'https://github.com/poise/test_rails.git'
   bundle_install do
     deployment true
+    without %w{development test}
   end
   rails do
     database 'sqlite3:///db.sqlite3'
