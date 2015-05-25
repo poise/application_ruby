@@ -87,20 +87,6 @@ describe PoiseApplicationRuby::RubyMixin do
       end # /context with a ruby_runtime
     end # /describe #ruby_mixin_command
 
-    describe '#ruby_mixin_environment' do
-      subject { test_provider.send(:ruby_mixin_environment) }
-
-      context 'with no parent' do
-        let(:parent) { nil }
-        it { is_expected.to eq Hash.new }
-      end # /context with no parent
-
-      context 'with a gemfile' do
-        let(:app_state) { {bundler_binary: '/test/bundle', bundler_gemfile: '/test/Gemfile'} }
-        it { is_expected.to eq({'BUNDLE_GEMFILE' => '/test/Gemfile'}) }
-      end # /context with a gemfile
-    end # /describe #ruby_mixin_environment
-
     describe '#service_options' do
       let(:command) { 'myapp --serve' }
       let(:service_resource) { double('service_resource', command: command, environment: {}) }
@@ -110,7 +96,6 @@ describe PoiseApplicationRuby::RubyMixin do
         it do
           test_provider.send(:service_options, service_resource)
           expect(service_resource).to receive(:command).with('myapp --serve')
-          expect(service_resource.environment).to eq Hash.new
           service_resource.command(command)
         end
       end # /context with no parent
@@ -120,7 +105,6 @@ describe PoiseApplicationRuby::RubyMixin do
         it do
           test_provider.send(:service_options, service_resource)
           expect(service_resource).to receive(:command).with('/test/bundle exec myapp --serve')
-          expect(service_resource.environment).to eq({'BUNDLE_GEMFILE' => '/test/Gemfile'})
           service_resource.command(command)
         end
       end # /context with a gemfile
