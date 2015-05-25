@@ -25,13 +25,16 @@ describe 'sinatra' do
     it { is_expected.to be_listening }
   end
 
+  let(:http) { Net::HTTP.new('localhost', 9000) }
+
   describe '/' do
-    subject { Net::HTTP.new('localhost', 9000).get('/') }
+    subject { http.get('/') }
     its(:code) { is_expected.to eq '404' }
   end
 
-  describe '/' do
-    subject { Net::HTTP.new('localhost', 9000).get('/hi') }
+  describe '/hi' do
+    subject { http.get('/hi') }
+    its(:code) { is_expected.to eq '200' }
     its(:body) { is_expected.to eq 'Hello World!' }
   end
 end
