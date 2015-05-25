@@ -19,7 +19,7 @@ require 'chef/mixin/which'
 require 'chef/provider'
 require 'chef/resource'
 require 'poise'
-require 'poise_application/resources/application'
+require 'poise_application/app_mixin'
 require 'poise_ruby/resources/bundle_install'
 
 require 'poise_application_ruby/error'
@@ -41,7 +41,7 @@ module PoiseApplicationRuby
       #     gem_path '/usr/local/bin/gem'
       #   end
       class Resource < PoiseRuby::Resources::BundleInstall::Resource
-        parent_type(:application)
+        include PoiseApplication::AppMixin
         provides(:application_bundle_install)
       end
 
@@ -49,6 +49,7 @@ module PoiseApplicationRuby
       #
       # @see Resource
       class Provider < PoiseRuby::Resources::BundleInstall::Provider
+        include PoiseApplication::AppMixin
         provides(:application_bundle_install)
 
         def action_install
@@ -65,7 +66,7 @@ module PoiseApplicationRuby
 
         def set_state
           if new_resource.parent
-            new_resource.parent.app_state[:bundler_gemfile] = gemfile_path
+            new_resource.app_state_environment[:BUNDLE_GEMFILE] = gemfile_path
             new_resource.parent.app_state[:bundler_binary] = bundler_binary
           end
         end

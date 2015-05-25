@@ -93,18 +93,6 @@ module PoiseApplicationRuby
         end
       end
 
-      # Return environment variables for running under bundler if needed.
-      #
-      # @api private
-      # @return [Hash<String, String>]
-      def ruby_mixin_environment
-        if new_resource.parent && new_resource.parent.app_state[:bundler_gemfile]
-          {'BUNDLE_GEMFILE' => new_resource.parent.app_state[:bundler_gemfile]}
-        else
-          {}
-        end
-      end
-
       # Reconfigure a service resource to run under bundle exec if needed.
       #
       # @return [void]
@@ -125,16 +113,6 @@ module PoiseApplicationRuby
         resource.define_singleton_method(:command) do |val=nil|
           val = self_.send(:ruby_mixin_command, val) if val
           old_command.call(val)
-        end
-
-        # Patch the environment method.
-        old_environment = resource.method(:environment)
-        resource.define_singleton_method(:environment) do |val=nil|
-          val = val.merge(self_.send(:ruby_mixin_environment)) if val
-          result = old_environment.call(val)
-          # Just in case no environment is set.
-          result = result.merge(self_.send(:ruby_mixin_environment)) if result
-          result
         end
       end
     end
