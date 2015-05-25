@@ -7,3 +7,4 @@ suites:
   run_list:
   - recipe[application_ruby_test]
   - recipe[application_ruby_test::sinatra]
+  - recipe[application_ruby_test::rails]

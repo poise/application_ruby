@@ -14,8 +14,28 @@
 # limitations under the License.
 #
 
-require 'poise_application_ruby/resources/bundle_install'
-require 'poise_application_ruby/resources/rackup'
-require 'poise_application_ruby/resources/rails'
-require 'poise_application_ruby/resources/thin'
-require 'poise_application_ruby/resources/unicorn'
+require 'net/http'
+
+require 'serverspec'
+set :backend, :exec
+
+
+describe 'rails' do
+  describe port(9001) do
+    it { is_expected.to be_listening }
+  end
+
+  let(:http) { Net::HTTP.new('localhost', 9001) }
+
+  describe '/' do
+    subject { http.get('/') }
+    its(:code) { is_expected.to eq '200' }
+    its(:body) { is_expected.to include '<h1>Hello, Rails!</h1>' }
+  end
+
+  describe '/articles' do
+    subject { http.get('/articles') }
+    its(:code) { is_expected.to eq '200' }
+    its(:body) { is_expected.to include '<h1>Listing articles</h1>' }
+  end
+end

@@ -14,8 +14,23 @@
 # limitations under the License.
 #
 
-require 'poise_application_ruby/resources/bundle_install'
-require 'poise_application_ruby/resources/rackup'
-require 'poise_application_ruby/resources/rails'
-require 'poise_application_ruby/resources/thin'
-require 'poise_application_ruby/resources/unicorn'
+include_recipe 'build-essential'
+
+package value_for_platform_family(debian: 'ruby-dev', rhel: 'ruby-devel')
+package value_for_platform_family(debian: 'zlib1g-dev', rhel: 'zlib-devel')
+package value_for_platform_family(debian: 'libsqlite3-dev', rhel: 'sqlite3-devel')
+
+application '/opt/test_rails' do
+  git 'https://github.com/poise/test_rails.git'
+  bundle_install do
+    deployment true
+  end
+  rails do
+    database 'sqlite3:///db.sqlite3'
+    migrate true
+    secret_token 'd78fe08df56c9'
+  end
+  unicorn do
+    port 9001
+  end
+end
