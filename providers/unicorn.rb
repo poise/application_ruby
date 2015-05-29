@@ -34,7 +34,7 @@ action :before_compile do
 
   unless new_resource.restart_command
     new_resource.restart_command do
-      execute "/etc/init.d/#{new_resource.name} hup" do
+      execute "/etc/init.d/#{new_resource.name} restart" do
         user "root"
       end
     end
