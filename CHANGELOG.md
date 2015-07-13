@@ -3,6 +3,11 @@ application_ruby Cookbook CHANGELOG
 This file is used to list changes made in each version of the application_rubycookbook.
 
 
+v3.0.3
+------
+Adds support for specifying SSL configuration parameters in the database.yml template.
+
+
 v3.0.2
 ------
 No changes, bumping version to get bits in various places in sync.

@@ -9,3 +9,18 @@
   password: <%= @database['password'] %>
   encoding: <%= @database.has_key?('encoding') ? @database['encoding'] : 'utf8' %>
   reconnect: true
+  <%- if @database['sslca'] -%>
+  sslca: <%= @database['sslca'] %>
+  <%- end -%>
+  <%- if @database['sslkey'] -%>
+  sslkey: <%= @database['sslkey'] %>
+  <%- end -%>
+  <%- if @database['sslcert'] -%>
+  sslcert: <%= @database['sslcert'] %>
+  <%- end -%>
+  <%- if @database['sslcapath'] -%>
+  sslcapath: <%= @database['sslcapath'] %>
+  <%- end -%>
+  <%- if @database['sslcipher'] -%>
+  sslcipher: <%= @database['sslcipher'] %>
+  <%- end -%>
