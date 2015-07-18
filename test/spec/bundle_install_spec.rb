@@ -23,7 +23,6 @@ describe PoiseApplicationRuby::Resources::BundleInstall do
 
     describe '#action_install' do
       it do
-        expect(provider).to receive(:install_bundler)
         expect(provider).to receive(:run_bundler).with('install')
         expect(provider).to receive(:set_state)
         provider.action_install
@@ -32,7 +31,6 @@ describe PoiseApplicationRuby::Resources::BundleInstall do
 
     describe '#action_update' do
       it do
-        expect(provider).to receive(:install_bundler)
         expect(provider).to receive(:run_bundler).with('update')
         expect(provider).to receive(:set_state)
         provider.action_update
