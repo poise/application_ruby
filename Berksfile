@@ -23,6 +23,7 @@ extension 'halite'
 cookbook 'poise', gem: 'poise'
 cookbook 'application', gem: 'poise-application'
 cookbook 'application_ruby', gem: 'poise-application-ruby'
+cookbook 'poise-languages', gem: 'poise-languages'
 cookbook 'poise-service', gem: 'poise-service'
 cookbook 'poise-ruby', gem: 'poise-ruby'
 
