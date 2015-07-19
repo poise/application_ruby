@@ -22,7 +22,10 @@ ruby_runtime 'any' do
   version ''
 end
 
-ruby_gem 'rack'
+ruby_gem 'rack' do
+  # Rack 1.6.2-1.6.4 broke 1.8 compat.
+  version '1.6.1'
+end
 
 application '/opt/rack1' do
   file '/opt/rack1/config.ru' do
@@ -41,7 +44,8 @@ application '/opt/rack2' do
   file '/opt/rack2/Gemfile' do
     content <<-EOH
 source 'https://rubygems.org/'
-gem 'rack'
+# See above ruby_gem[rack] for matching version.
+gem 'rack', '1.6.1'
 EOH
   end
 
