@@ -1,8 +1,0 @@
-<%= @env %>:
-<%- @options.each do |k, v| %>
-  <%= k %>: <%= v %>
-<%- end %>
-  servers:
-<%- @hosts.each do |h| %>
-    - <%= h['ipaddress'] %>:<%= h['memcached']['port'] %>
-<%- end %>
