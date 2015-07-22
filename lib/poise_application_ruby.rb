@@ -16,6 +16,7 @@
 
 
 module PoiseApplicationRuby
+  autoload :Error, 'poise_application_ruby/error'
   autoload :Resources, 'poise_application_ruby/resources'
   autoload :RubyMixin, 'poise_application_ruby/ruby_mixin'
   autoload :VERSION, 'poise_application_ruby/version'
