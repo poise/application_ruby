@@ -7,7 +7,208 @@
 [![Gemnasium](https://img.shields.io/gemnasium/poise/application_ruby.svg)](https://gemnasium.com/poise/application_ruby)
 [![License](https://img.shields.io/badge/license-Apache_2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-More info coming soon!
+A [Chef](https://www.chef.io/) cookbook to deploy Ruby applications.
+
+## Quick Start
+
+To deploy a Rails application from git:
+
+```ruby
+application '/srv/myapp' do
+  git 'https://github.com/example/myapp.git'
+  bundle_install do
+    deployment true
+    without %w{development test}
+  end
+  rails do
+    database 'sqlite3:///db.sqlite3'
+    secret_token 'd78fe08df56c9'
+    migrate true
+  end
+  unicorn do
+    port 8000
+  end
+end
+```
+
+## Requirements
+
+Chef 12 or newer is required.
+
+## Resources
+
+### `application_bundle_install`
+
+The `application_bundle_install` resource installs gems using Bundler for a
+deployment.
+
+```ruby
+application '/srv/myapp' do
+  bundle_install do
+    deployment true
+    without %w{development test}
+  end
+end
+```
+
+All actions and properties are the same as the [`bundle_install` resource](https://github.com/poise/poise-ruby#bundle_install).
+
+### `application_rackup`
+
+The `application_rackup` resource creates a service for `rackup`.
+
+```ruby
+application '/srv/myapp' do
+  rackup do
+    port 8000
+  end
+end
+```
+
+#### Actions
+
+* `:enable` – Create, enable and start the service. *(default)*
+* `:disable` – Stop, disable, and destroy the service.
+* `:start` – Start the service.
+* `:stop` – Stop the service.
+* `:restart` – Stop and then start the service.
+* `:reload` – Send the configured reload signal to the service.
+
+#### Properties
+
+* `path` – Base path for the application. *(name attribute)*
+* `port` – Port to listen on. *(default: 80)*
+* `service_name` – Name of the service to create. *(default: auto-detect)*
+# `user` – User to run the service as. *(default: application owner)*
+
+### `application_rails`
+
+The `application_rails` resource
+
+```ruby
+application '/srv/myapp' do
+  rails do
+    database 'sqlite3:///db.sqlite3'
+    secret_token 'd78fe08df56c9'
+    migrate true
+  end
+end
+```
+
+#### Actions
+
+* `:deploy` – Create config files and run required deployments steps. *(default)*
+
+#### Properties
+
+* `path` – Base path for the application. *(name attribute)*
+* `database` – Database settings for Rails. See [the database section
+  below](#database-parameters) for more information. *(option collector)*
+* `migrate` – Run database migrations. *(default: false)*
+* `precompile_assets` – Run `rake assets:precompile`. *(default: auto-detect)()
+* `rails_env` – Rails environment name. *(default: node.chef_environment)*
+* `secret_token` – Secret token for Rails session verification et al.
+* `secrets_mode` – Secrets configuration mode. Set to `:yaml` to generate a
+  Rails 4.2 secrets.yml. Set to `:initializer` to update
+  `config/initializers/secret_token.rb`. *(default: auto-detect)*
+
+**NOTE:** At this time `secrets_mode :initializer` is not implemented.
+
+#### Database Parameters
+
+The database parameters can be set in three ways: URL, hash, and block.
+
+If you have a single URL for the parameters, you can pass it directly to
+`database`:
+
+```ruby
+rails do
+  database 'mysql2://myuser@dbhost/myapp'
+end
+```
+
+Passing a single URL will also set the `$DATABASE_URL` environment variable
+automatically for compatibility with Heroku-based applications.
+
+As with other option collector resources, you can pass individual settings as
+either a hash or block:
+
+```ruby
+rails do
+  database do
+    adapter 'mysql2'
+    username 'myuser'
+    host 'dbhost'
+    database 'myapp'
+  end
+end
+
+rails do
+  database({
+    adapter: 'mysql2',
+    username: 'myuser',
+    host: 'dbhost',
+    database: 'myapp',
+  })
+end
+```
+
+### `application_thin`
+
+The `application_thin` resource creates a service for `thin`.
+
+```ruby
+application '/srv/myapp' do
+  thin do
+    port 8000
+  end
+end
+```
+
+#### Actions
+
+* `:enable` – Create, enable and start the service. *(default)*
+* `:disable` – Stop, disable, and destroy the service.
+* `:start` – Start the service.
+* `:stop` – Stop the service.
+* `:restart` – Stop and then start the service.
+* `:reload` – Send the configured reload signal to the service.
+
+#### Properties
+
+* `path` – Base path for the application. *(name attribute)*
+* `config_path` – Path to a Thin configuration file.
+* `port` – Port to listen on. *(default: 80)*
+* `service_name` – Name of the service to create. *(default: auto-detect)*
+# `user` – User to run the service as. *(default: application owner)*
+
+### `application_unicorn`
+
+The `application_unicorn` resource creates a service for `unicorn`.
+
+```ruby
+application '/srv/myapp' do
+  unicorn do
+    port 8000
+  end
+end
+```
+
+#### Actions
+
+* `:enable` – Create, enable and start the service. *(default)*
+* `:disable` – Stop, disable, and destroy the service.
+* `:start` – Start the service.
+* `:stop` – Stop the service.
+* `:restart` – Stop and then start the service.
+* `:reload` – Send the configured reload signal to the service.
+
+#### Properties
+
+* `path` – Base path for the application. *(name attribute)*
+* `port` – Port to listen on. *(default: 80)*
+* `service_name` – Name of the service to create. *(default: auto-detect)*
+# `user` – User to run the service as. *(default: application owner)*
 
 ## Sponsors
 
