@@ -50,10 +50,6 @@ module PoiseApplicationRuby
         provides(:application_rails)
         actions(:deploy)
 
-        # @!attribute path
-        #   Application base path.
-        #   @return [String]
-        attribute(:path, kind_of: String, name_attribute: true)
         # @!attribute database
         #   Option collector attribute for Rails database configuration.
         #   @return [Hash]
