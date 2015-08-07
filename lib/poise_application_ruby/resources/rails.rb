@@ -192,9 +192,8 @@ module PoiseApplicationRuby
 
         # Set app_state variables for future services et al.
         def set_state
-          if new_resource.parent
-            new_resource.app_state_environment[:RAILS_ENV] = new_resource.rails_env
-          end
+          new_resource.app_state_environment[:RAILS_ENV] = new_resource.rails_env
+          new_resource.app_state_environment[:DATABASE_URL] = new_resource.database['url'] if new_resource.database['url']
         end
 
         # Create a database.yml config file.
