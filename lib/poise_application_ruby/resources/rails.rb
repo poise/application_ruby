@@ -63,7 +63,7 @@ module PoiseApplicationRuby
         attribute(:database, option_collector: true, parser: :parse_database_url)
         # @!attribute database_config
         #   Template content attribute for the contents of database.yml.
-        #   @todo Redo this doc to over the actual attributes created.
+        #   @todo Redo this doc to cover the actual attributes created.
         #   @return [Poise::Helpers::TemplateContent]
         attribute(:database_config, template: true, default_source: 'database.yml.erb', default_options: lazy { default_database_options })
         # @!attribute migrate
@@ -92,7 +92,7 @@ module PoiseApplicationRuby
         # @!attribute secrets_config
         #   Template content attribute for the contents of secrets.yml. Only
         #   used when secrets_mode is :yaml.
-        #   @todo Redo this doc to over the actual attributes created.
+        #   @todo Redo this doc to cover the actual attributes created.
         #   @return [Poise::Helpers::TemplateContent]
         attribute(:secrets_config, template: true, default_source: 'secrets.yml.erb', default_options: lazy { default_secrets_options })
         # @!attribute secrets_mode
