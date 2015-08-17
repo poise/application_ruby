@@ -17,24 +17,4 @@
 require 'spec_helper'
 
 describe PoiseApplicationRuby::Resources::BundleInstall do
-  describe PoiseApplicationRuby::Resources::BundleInstall::Provider do
-    let(:new_resource) { double() }
-    let(:provider) { described_class.new(new_resource, nil) }
-
-    describe '#action_install' do
-      it do
-        expect(provider).to receive(:run_bundler).with('install')
-        expect(provider).to receive(:set_state)
-        provider.action_install
-      end
-    end # /describe #action_install
-
-    describe '#action_update' do
-      it do
-        expect(provider).to receive(:run_bundler).with('update')
-        expect(provider).to receive(:set_state)
-        provider.action_update
-      end
-    end # /describe #action_update
-  end # /describe PoiseApplicationRuby::Resources::BundleInstall::Provider
 end

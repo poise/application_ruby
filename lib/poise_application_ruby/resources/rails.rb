@@ -16,10 +16,8 @@
 
 require 'chef/provider'
 require 'chef/resource'
-require 'poise'
-require 'poise_application/app_mixin'
 
-require 'poise_application_ruby/ruby_mixin'
+require 'poise_application_ruby/app_mixin'
 
 
 module PoiseApplicationRuby
@@ -45,8 +43,7 @@ module PoiseApplicationRuby
       #     end
       #   end
       class Resource < Chef::Resource
-        include PoiseApplication::AppMixin
-        include PoiseApplicationRuby::RubyMixin
+        include PoiseApplicationRuby::AppMixin
         provides(:application_rails)
         actions(:deploy)
 
@@ -166,8 +163,7 @@ module PoiseApplicationRuby
       # @see Resource
       # @provides application_rails
       class Provider < Chef::Provider
-        include PoiseApplication::AppMixin
-        include PoiseApplicationRuby::RubyMixin
+        include PoiseApplicationRuby::AppMixin
         provides(:application_rails)
 
         # `deploy` action for `application_rails`. Ensure all configuration
@@ -232,11 +228,14 @@ module PoiseApplicationRuby
         def precompile_assets
           # Currently this will always run so the resource will always update :-/
           # Better fix would be to shell_out! and parse the output?
-          execute ruby_mixin_command(%w{rake assets:precompile}) do
+          ruby_execute 'rake assets:precompile' do
+            command %w{rake assets:precompile}
             user new_resource.parent.owner
             group new_resource.parent.group
             cwd new_resource.parent.path
             environment new_resource.app_state_environment
+            ruby_from_parent new_resource
+            parent_bundle new_resource.parent_bundle if new_resource.parent_bundle
           end
         end
 
@@ -244,11 +243,14 @@ module PoiseApplicationRuby
         def run_migrations
           # Currently this will always run so the resource will always update :-/
           # Better fix would be to shell_out! and parse the output?
-          execute ruby_mixin_command(%w{rake db:migrate}) do
+          ruby_execute 'rake db:migrate' do
+            command %w{rake db:migrate}
             user new_resource.parent.owner
             group new_resource.parent.group
             cwd new_resource.parent.path
             environment new_resource.app_state_environment
+            ruby_from_parent new_resource
+            parent_bundle new_resource.parent_bundle if new_resource.parent_bundle
           end
         end
 

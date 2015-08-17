@@ -16,10 +16,8 @@
 
 require 'chef/provider'
 require 'chef/resource'
-require 'poise'
-require 'poise_application/service_mixin'
 
-require 'poise_application_ruby/ruby_mixin'
+require 'poise_application_ruby/service_mixin'
 
 
 module PoiseApplicationRuby
@@ -27,17 +25,41 @@ module PoiseApplicationRuby
     # (see Unicorn::Resource)
     # @since 4.0.0
     module Unicorn
+      # An `application_unicorn` resource to manage a unicorn web application
+      # server.
+      #
+      # @since 4.0.0
+      # @provides application_unicorn
+      # @action enable
+      # @action disable
+      # @action start
+      # @action stop
+      # @action restart
+      # @action reload
+      # @example
+      #   application '/srv/myapp' do
+      #     git '...'
+      #     bundle_install
+      #     unicorn do
+      #       port 8080
+      #     end
+      #   end
       class Resource < Chef::Resource
-        include PoiseApplication::ServiceMixin
-        include PoiseApplicationRuby::RubyMixin
+        include PoiseApplicationRuby::ServiceMixin
         provides(:application_unicorn)
 
+        # @!attribute port
+        #   Port to bind to.
         attribute(:port, kind_of: [String, Integer], default: 80)
       end
 
+      # Provider for `application_unicorn`.
+      #
+      # @since 4.0.0
+      # @see Resource
+      # @provides application_unicorn
       class Provider < Chef::Provider
-        include PoiseApplication::ServiceMixin
-        include PoiseApplicationRuby::RubyMixin
+        include PoiseApplicationRuby::ServiceMixin
         provides(:application_unicorn)
 
         private
@@ -54,10 +76,10 @@ module PoiseApplicationRuby
           end
         end
 
-        # (see PoiseApplication::ServiceMixin#service_options)
+        # Set service resource options.
         def service_options(resource)
           super
-          resource.command("unicorn --port #{new_resource.port} #{configru_path}")
+          resource.ruby_command("unicorn --port #{new_resource.port} #{configru_path}")
         end
       end
     end

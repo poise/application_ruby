@@ -14,41 +14,45 @@
 # limitations under the License.
 #
 
-require 'poise_ruby/resources/bundle_install'
+require 'poise_ruby/resources/ruby_runtime'
 
 require 'poise_application_ruby/app_mixin'
 
 
 module PoiseApplicationRuby
   module Resources
-    # (see BundleInstall::Resource)
+    # (see Ruby::Resource)
     # @since 4.0.0
-    module BundleInstall
-      # An `application_bundle_install` resource to install a
-      # [Bundler](http://bundler.io/) Gemfile in a web application.
+    module Ruby
+      # An `application_ruby` resource to manage Ruby runtimes
+      # inside an Application cookbook deployment.
       #
-      # @note
-      #   This resource is not idempotent itself, it will always run `bundle
-      #   install`.
+      # @provides application_ruby
+      # @provides application_ruby_ruby_runtime
+      # @action install
+      # @action uninstall
       # @example
-      #   application_bundle_install '/opt/my_app' do
-      #     gem_path '/usr/local/bin/gem'
+      #   application '/app' do
+      #     ruby '2'
       #   end
-      class Resource < PoiseRuby::Resources::BundleInstall::Resource
+      class Resource < PoiseRuby::Resources::RubyRuntime::Resource
         include PoiseApplicationRuby::AppMixin
-        provides(:application_bundle_install)
+        provides(:application_ruby)
+        # Need the double ruby for application resource rewriting.
+        provides(:application_ruby_ruby_runtime)
+        container_default(false)
         subclass_providers!
 
-        # Set this resource as the app_state's parent bundle.
+        # Set this resource as the app_state's parent ruby.
         #
         # @api private
         def after_created
           super.tap do |val|
-            app_state_bundle(self)
+            app_state_ruby(self)
           end
         end
-      end
 
+      end
     end
   end
 end

@@ -16,10 +16,8 @@
 
 require 'chef/provider'
 require 'chef/resource'
-require 'poise'
-require 'poise_application/service_mixin'
 
-require 'poise_application_ruby/ruby_mixin'
+require 'poise_application_ruby/service_mixin'
 
 
 module PoiseApplicationRuby
@@ -28,8 +26,7 @@ module PoiseApplicationRuby
     # @since 4.0.0
     module Thin
       class Resource < Chef::Resource
-        include PoiseApplication::ServiceMixin
-        include PoiseApplicationRuby::RubyMixin
+        include PoiseApplicationRuby::ServiceMixin
         provides(:application_thin)
 
         attribute(:port, kind_of: [String, Integer], default: 80)
@@ -37,8 +34,7 @@ module PoiseApplicationRuby
       end
 
       class Provider < Chef::Provider
-        include PoiseApplication::ServiceMixin
-        include PoiseApplicationRuby::RubyMixin
+        include PoiseApplicationRuby::ServiceMixin
         provides(:application_thin)
 
         private
@@ -60,7 +56,7 @@ module PoiseApplicationRuby
           super
           cmd = "thin --rackup #{configru_path} --port #{new_resource.port}"
           cmd << " --config #{::File.expand_path(new_resource.config_path, new_resource.path)}" if new_resource.config_path
-          resource.command(cmd)
+          resource.ruby_command(cmd)
         end
       end
     end

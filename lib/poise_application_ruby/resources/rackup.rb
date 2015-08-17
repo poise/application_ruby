@@ -16,10 +16,8 @@
 
 require 'chef/provider'
 require 'chef/resource'
-require 'poise'
-require 'poise_application/service_mixin'
 
-require 'poise_application_ruby/ruby_mixin'
+require 'poise_application_ruby/service_mixin'
 
 
 module PoiseApplicationRuby
@@ -28,8 +26,7 @@ module PoiseApplicationRuby
     # @since 4.0.0
     module Rackup
       class Resource < Chef::Resource
-        include PoiseApplication::ServiceMixin
-        include PoiseApplicationRuby::RubyMixin
+        include PoiseApplicationRuby::ServiceMixin
         provides(:application_rackup)
 
         # @!attribute port
@@ -39,8 +36,7 @@ module PoiseApplicationRuby
       end
 
       class Provider < Chef::Provider
-        include PoiseApplication::ServiceMixin
-        include PoiseApplicationRuby::RubyMixin
+        include PoiseApplicationRuby::ServiceMixin
         provides(:application_rackup)
 
         private
@@ -63,7 +59,7 @@ module PoiseApplicationRuby
         # @return [void]
         def service_options(resource)
           super
-          resource.command("rackup --port #{new_resource.port}")
+          resource.ruby_command("rackup --port #{new_resource.port}")
           resource.directory(::File.dirname(configru_path))
           # Older versions of rackup ignore all signals.
           resource.stop_signal('KILL')
