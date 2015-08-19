@@ -25,10 +25,6 @@ describe 'rackup' do
       it { is_expected.to be_listening }
     end
 
-    describe process('rackup') do
-      it { is_expected.to be_running }
-    end
-
     describe 'HTTP response' do
       subject { Net::HTTP.new('localhost', 8000).get('/').body }
       it { is_expected.to eq 'Hello world' }
