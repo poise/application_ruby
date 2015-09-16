@@ -27,7 +27,7 @@ module PoiseApplicationRuby
       # An `application_ruby_ruby_gem` resource to install Ruby gems inside an
       # Application cookbook deployment.
       #
-      # @provides application_ruby_gem
+      # @provides application_ruby_ruby_gem
       # @action install
       # @action upgrade
       # @action remove
