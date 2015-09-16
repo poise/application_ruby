@@ -24,7 +24,7 @@ module PoiseApplicationRuby
     # (see RubyGem::Resource)
     # @since 4.0.0
     module RubyGem
-      # An `application_ruby_gem` resource to install Ruby gems inside an
+      # An `application_ruby_ruby_gem` resource to install Ruby gems inside an
       # Application cookbook deployment.
       #
       # @provides application_ruby_gem
@@ -37,7 +37,7 @@ module PoiseApplicationRuby
       #   end
       class Resource < PoiseRuby::Resources::RubyGem::Resource
         include PoiseApplicationRuby::AppMixin
-        provides(:application_ruby_gem)
+        provides(:application_ruby_ruby_gem)
         subclass_providers!
       end
 

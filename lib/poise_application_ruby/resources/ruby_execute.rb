@@ -27,7 +27,7 @@ module PoiseApplicationRuby
       # An `application_ruby_execute` resource to run Ruby commands inside an
       # Application cookbook deployment.
       #
-      # @provides application_ruby_execute
+      # @provides application_ruby_ruby_execute
       # @action run
       # @example
       #   application '/srv/myapp' do
@@ -35,7 +35,7 @@ module PoiseApplicationRuby
       #   end
       class Resource < PoiseRuby::Resources::RubyExecute::Resource
         include PoiseApplicationRuby::AppMixin
-        provides(:application_ruby_execute)
+        provides(:application_ruby_ruby_execute)
         subclass_providers!
 
         # #!attribute cwd
