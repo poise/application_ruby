@@ -14,39 +14,34 @@
 # limitations under the License.
 #
 
-require 'poise_ruby/resources/bundle_install'
+require 'poise_ruby/resources/ruby_execute'
 
 require 'poise_application_ruby/app_mixin'
 
 
 module PoiseApplicationRuby
   module Resources
-    # (see BundleInstall::Resource)
+    # (see RubyExecute::Resource)
     # @since 4.0.0
-    module BundleInstall
-      # An `application_bundle_install` resource to install a
-      # [Bundler](http://bundler.io/) Gemfile in a web application.
+    module RubyExecute
+      # An `application_ruby_execute` resource to run Ruby commands inside an
+      # Application cookbook deployment.
       #
-      # @note
-      #   This resource is not idempotent itself, it will always run `bundle
-      #   install`.
+      # @provides application_ruby_execute
+      # @action run
       # @example
-      #   application '/srv/my_app' do
-      #     bundle_install
+      #   application '/srv/myapp' do
+      #     ruby_execute 'rake build'
       #   end
-      class Resource < PoiseRuby::Resources::BundleInstall::Resource
+      class Resource < PoiseRuby::Resources::RubyExecute::Resource
         include PoiseApplicationRuby::AppMixin
-        provides(:application_bundle_install)
+        provides(:application_ruby_execute)
         subclass_providers!
 
-        # Set this resource as the app_state's parent bundle.
-        #
-        # @api private
-        def after_created
-          super.tap do |val|
-            app_state_bundle(self)
-          end
-        end
+        # #!attribute cwd
+        #   Override the default directory to be the app path if unspecified.
+        #   @return [String]
+        attribute(:cwd, kind_of: [String, NilClass, FalseClass], default: lazy { parent && parent.path })
       end
 
     end

@@ -17,5 +17,8 @@
 require 'poise_application_ruby/resources/bundle_install'
 require 'poise_application_ruby/resources/rackup'
 require 'poise_application_ruby/resources/rails'
+require 'poise_application_ruby/resources/ruby'
+require 'poise_application_ruby/resources/ruby_execute'
+require 'poise_application_ruby/resources/ruby_gem'
 require 'poise_application_ruby/resources/thin'
 require 'poise_application_ruby/resources/unicorn'
