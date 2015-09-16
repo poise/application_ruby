@@ -153,6 +153,43 @@ rails do
 end
 ```
 
+### `application_ruby`
+
+The `application_ruby` resource installs a Ruby runtime for the deployment.
+
+```ruby
+application '/srv/myapp' do
+  ruby '2.2'
+end
+```
+
+All actions and properties are the same as the [`ruby_runtime` resource](https://github.com/poise/poise-ruby#ruby_runtime).
+
+### `application_ruby_ruby_gem`
+
+The `application_ruby_ruby_gem` resource installs Ruby gems for the deployment.
+
+```ruby
+application '/srv/myapp' do
+  ruby_gem 'rake'
+end
+```
+
+All actions and properties are the same as the [`ruby_gem` resource](https://github.com/poise/poise-ruby#ruby_gem).
+
+### `application_ruby_ruby_execute`
+
+The `application_ruby_ruby_execute` resource runs Ruby commands for the deployment.
+
+```ruby
+application '/srv/myapp' do
+  ruby_execute 'rake'
+end
+```
+
+All actions and properties are the same as the [`ruby_execute` resource](https://github.com/poise/poise-ruby#ruby_execute),
+except that the default `cwd` is the application path.
+
 ### `application_thin`
 
 The `application_thin` resource creates a service for `thin`.
