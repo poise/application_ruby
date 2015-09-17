@@ -65,7 +65,6 @@ module PoiseApplicationRuby
       #
       # @see Resource
       # @provides application_ruby_execute
-      # @provides application_ruby_ruby_execute
       class Provider < PoiseRuby::Resources::RubyExecute::Provider
         provides(:application_ruby_execute)
 
