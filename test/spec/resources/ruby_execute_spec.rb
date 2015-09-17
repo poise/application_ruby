@@ -17,7 +17,7 @@
 require 'spec_helper'
 
 describe PoiseApplicationRuby::Resources::RubyExecute do
-  step_into(:application_ruby_ruby_execute)
+  step_into(:application_ruby_execute)
   recipe do
     application '/srv/myapp' do
       owner 'myuser'
@@ -39,8 +39,8 @@ describe PoiseApplicationRuby::Resources::RubyExecute do
       returns: 0,
       environment: {'ENVKEY' => 'ENVVALUE'},
       log_level: :info,
-      log_tag: 'application_ruby_ruby_execute[myapp.rb]',
+      log_tag: 'application_ruby_execute[myapp.rb]',
     )
-    is_expected.to run_application_ruby_ruby_execute('myapp.rb').with(user: 'myuser', group: 'mygroup', cwd: '/srv/myapp')
+    is_expected.to run_application_ruby_execute('myapp.rb').with(user: 'myuser', group: 'mygroup', cwd: '/srv/myapp')
   end
 end

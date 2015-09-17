@@ -27,6 +27,7 @@ module PoiseApplicationRuby
       # An `application_ruby_execute` resource to run Ruby commands inside an
       # Application cookbook deployment.
       #
+      # @provides application_ruby_execute
       # @provides application_ruby_ruby_execute
       # @action run
       # @example
@@ -35,6 +36,7 @@ module PoiseApplicationRuby
       #   end
       class Resource < PoiseRuby::Resources::RubyExecute::Resource
         include PoiseApplicationRuby::AppMixin
+        provides(:application_ruby_execute)
         provides(:application_ruby_ruby_execute)
 
         def initialize(*args)
@@ -61,12 +63,14 @@ module PoiseApplicationRuby
         attribute(:user, kind_of: [String, Integer, NilClass, FalseClass], default: lazy { parent && parent.owner })
       end
 
-      # The default provider for `application_ruby_ruby_execute`.
+      # The default provider for `application_ruby_execute`.
       #
       # @see Resource
+      # @provides application_ruby_execute
       # @provides application_ruby_ruby_execute
       class Provider < PoiseRuby::Resources::RubyExecute::Provider
-        provides(:application_ruby_ruby_execute)
+        provides(:application_ruby_execute)
+        provides(:application_ruby_ruby_executeruby_execute)
 
         private
 
