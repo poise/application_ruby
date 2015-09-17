@@ -28,7 +28,6 @@ module PoiseApplicationRuby
       # Application cookbook deployment.
       #
       # @provides application_ruby_execute
-      # @provides application_ruby_ruby_execute
       # @action run
       # @example
       #   application '/srv/myapp' do
@@ -37,7 +36,6 @@ module PoiseApplicationRuby
       class Resource < PoiseRuby::Resources::RubyExecute::Resource
         include PoiseApplicationRuby::AppMixin
         provides(:application_ruby_execute)
-        provides(:application_ruby_ruby_execute)
 
         def initialize(*args)
           super
@@ -70,7 +68,6 @@ module PoiseApplicationRuby
       # @provides application_ruby_ruby_execute
       class Provider < PoiseRuby::Resources::RubyExecute::Provider
         provides(:application_ruby_execute)
-        provides(:application_ruby_ruby_executeruby_execute)
 
         private
 

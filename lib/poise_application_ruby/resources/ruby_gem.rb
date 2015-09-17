@@ -28,7 +28,6 @@ module PoiseApplicationRuby
       # Application cookbook deployment.
       #
       # @provides application_ruby_gem
-      # @provides application_ruby_ruby_gem
       # @action install
       # @action upgrade
       # @action remove
@@ -39,7 +38,6 @@ module PoiseApplicationRuby
       class Resource < PoiseRuby::Resources::RubyGem::Resource
         include PoiseApplicationRuby::AppMixin
         provides(:application_ruby_gem)
-        provides(:application_ruby_ruby_gem)
         subclass_providers!
       end
 

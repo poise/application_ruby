@@ -28,7 +28,7 @@ module PoiseApplicationRuby
       # inside an Application cookbook deployment.
       #
       # @provides application_ruby
-      # @provides application_ruby_ruby_runtime
+      # @provides application_ruby_runtime
       # @action install
       # @action uninstall
       # @example
@@ -38,8 +38,7 @@ module PoiseApplicationRuby
       class Resource < PoiseRuby::Resources::RubyRuntime::Resource
         include PoiseApplicationRuby::AppMixin
         provides(:application_ruby)
-        # Need the double ruby for application resource rewriting.
-        provides(:application_ruby_ruby_runtime)
+        provides(:application_ruby_runtime)
         container_default(false)
         subclass_providers!
 
