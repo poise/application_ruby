@@ -50,7 +50,7 @@ module PoiseApplicationRuby
         resource.define_singleton_method(:ruby_command) do |val|
           path = self_.new_resource.app_state_environment_ruby['PATH']
           cmd = if self_.new_resource.parent_bundle
-            bundle_exec_environment(val, path: path)
+            bundle_exec_command(val, path: path)
           else
             "#{self_.new_resource.ruby} #{PoiseLanguages::Utils.absolute_command(val, path: path)}"
           end
@@ -58,6 +58,7 @@ module PoiseApplicationRuby
         end
         # Include env vars as needed.
         resource.environment.update(new_resource.parent_ruby.ruby_environment) if new_resource.parent_ruby
+        resource.environment['BUNDLE_GEMFILE'] = new_resource.parent_bundle.gemfile_path if new_resource.parent_bundle
       end
 
     end
