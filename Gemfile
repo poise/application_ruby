@@ -28,10 +28,10 @@ def dev_gem(name, path: File.join('..', name), github: nil)
 end
 
 dev_gem 'halite'
-dev_gem 'poise', github: 'poise/poise'
-dev_gem 'poise-application', path: '../application', github: 'poise/application'
-dev_gem 'poise-application-git', path: '../application_git', github: 'poise/application_git'
+dev_gem 'poise'
+dev_gem 'poise-application', path: '../application'
+dev_gem 'poise-application-git', path: '../application_git'
 dev_gem 'poise-boiler'
-dev_gem 'poise-languages', github: 'poise/poise-languages'
-dev_gem 'poise-ruby', github: 'poise/poise-ruby'
-dev_gem 'poise-service', github: 'poise/poise-service'
+dev_gem 'poise-languages'
+dev_gem 'poise-ruby'
+dev_gem 'poise-service'
