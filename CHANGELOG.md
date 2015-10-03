@@ -1,5 +1,9 @@
 # Application_Ruby Changelog
 
+## v4.0.0
+
+* Massive rewrite on top of newer Chef patterns. See the 4.0 README for details.
+
 ## v3.0.2
 
 * No changes, bumping version to get bits in various places in sync.
