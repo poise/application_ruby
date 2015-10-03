@@ -17,6 +17,7 @@
 require 'poise/utils'
 require 'poise_application/service_mixin'
 require 'poise_languages/utils'
+require 'poise_ruby/bundler_mixin'
 
 require 'poise_application_ruby/app_mixin'
 
@@ -38,6 +39,7 @@ module PoiseApplicationRuby
     module Provider
       include PoiseApplication::ServiceMixin::Provider
       include PoiseApplicationRuby::AppMixin::Provider
+      include PoiseRuby::BundlerMixin
 
       # Set up the service for running Ruby stuff.
       def service_options(resource)
@@ -46,11 +48,11 @@ module PoiseApplicationRuby
         self_ = self
         # Create a new singleton method that fills in Python for you.
         resource.define_singleton_method(:ruby_command) do |val|
-          ruby = self_.new_resource.ruby
+          path = self_.new_resource.app_state_environment_ruby['PATH']
           cmd = if self_.new_resource.parent_bundle
-            "#{ruby} #{self_.new_resource.parent_bundle.bundler_binary} exec #{val}"
+            bundle_exec_environment(val, path: path)
           else
-            "#{ruby} #{PoiseLanguages::Utils.absolute_command(val, path: self_.new_resource.app_state_environment_ruby['PATH'])}"
+            "#{self_.new_resource.ruby} #{PoiseLanguages::Utils.absolute_command(val, path: path)}"
           end
           resource.command(cmd)
         end
