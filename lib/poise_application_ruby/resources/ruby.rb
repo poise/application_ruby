@@ -42,6 +42,12 @@ module PoiseApplicationRuby
         container_default(false)
         subclass_providers!
 
+        # Rebind the parent class #gem_binary instead of the one from
+        # RubyCommandMixin (by way of AppMixin)
+        def gem_binary(*args, &block)
+          self.class.superclass.instance_method(:gem_binary).bind(self).call(*args, &block)
+        end
+
         # Set this resource as the app_state's parent ruby.
         #
         # @api private
