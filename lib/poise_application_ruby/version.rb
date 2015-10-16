@@ -15,5 +15,5 @@
 #
 
 module PoiseApplicationRuby
-  VERSION = '4.0.1.pre'
+  VERSION = '4.0.1'
 end
