@@ -1,5 +1,9 @@
 # Application_Ruby Changelog
 
+## v4.0.1
+
+* Correct `gem_binary` results for `application_ruby`.
+
 ## v4.0.0
 
 * Massive rewrite on top of newer Chef patterns. See the 4.0 README for details.
