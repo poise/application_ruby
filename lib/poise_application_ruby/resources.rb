@@ -15,6 +15,7 @@
 #
 
 require 'poise_application_ruby/resources/bundle_install'
+require 'poise_application_ruby/resources/puma'
 require 'poise_application_ruby/resources/rackup'
 require 'poise_application_ruby/resources/rails'
 require 'poise_application_ruby/resources/ruby'
