@@ -33,7 +33,7 @@ end
 
 ## Requirements
 
-Chef 12 or newer is required.
+Chef 12.1 or newer is required.
 
 ## Resources
 

@@ -65,5 +65,5 @@ EOH
   end
 end
 
-include_recipe 'application_ruby_test::rails'
-include_recipe 'application_ruby_test::sinatra'
+include_recipe '::rails'
+include_recipe '::sinatra'

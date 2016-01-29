@@ -17,7 +17,6 @@ script:
 - "./bin/rake travis"
 gemfile:
 - test/gemfiles/chef-12.gemfile
-- test/gemfiles/chef-12.0.gemfile
 - test/gemfiles/chef-12.1.gemfile
 - test/gemfiles/chef-12.2.gemfile
 - test/gemfiles/chef-12.3.gemfile
