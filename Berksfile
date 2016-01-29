@@ -19,17 +19,7 @@
 source 'https://supermarket.chef.io/'
 extension 'halite'
 
-# Force the rebuild every time for development.
-cookbook 'poise', gem: 'poise'
-cookbook 'application', gem: 'poise-application'
-cookbook 'application_ruby', gem: 'poise-application-ruby'
-cookbook 'poise-languages', gem: 'poise-languages'
-cookbook 'poise-service', gem: 'poise-service'
-cookbook 'poise-ruby', gem: 'poise-ruby'
-
 group :test do
   cookbook 'application_git', gem: 'poise-application-git'
-  cookbook 'application_ruby_test', path: 'test/cookbooks/application_ruby_test'
-  cookbook 'apt'
   cookbook 'git'
 end

@@ -10,7 +10,6 @@ addons:
 env:
   global:
   - USE_SYSTEM_GECODE=true
-  - KITCHEN_LOCAL_YAML=.kitchen.travis.yml
   - secure: jQ+4WYd8BWSyWAvpvqbX/FXXhX/NbFmT1u/4WSTnFHi6DT+JFSE/nix6GnznGxK40/VXJaUPCN6bzgYPEK0XfYhcy+pdg9DuxYSKiKv/nsnACHI24MC6ipnHHpo3L+EsbZx2cpl9pHRiZf9sLH9X0lgIY1kNGWcu1Mdqa4+zk3s=
   - secure: K3R3/mibEEGg4IdvwoZ5xWxdOghMY98bt9L6ywYfnlROyJMAzkMvqxj3fgRmDsoOKoVF1zE4tMd1OmJ2Utc4IzL+PNFOOMt7Py8DZ+BSxCj8HNvO+FbrNITYXxA1ofiy/vbLAm1Lx073Vq/KilTWr7L0i9DZmCweWHxv6SYPB9s=
 bundler_args: "--binstubs=$PWD/bin --jobs 3 --retry 3"
@@ -18,4 +17,11 @@ script:
 - "./bin/rake travis"
 gemfile:
 - test/gemfiles/chef-12.gemfile
+- test/gemfiles/chef-12.0.gemfile
+- test/gemfiles/chef-12.1.gemfile
+- test/gemfiles/chef-12.2.gemfile
+- test/gemfiles/chef-12.3.gemfile
+- test/gemfiles/chef-12.4.gemfile
+- test/gemfiles/chef-12.5.gemfile
+- test/gemfiles/chef-12.6.gemfile
 - test/gemfiles/master.gemfile

@@ -64,3 +64,6 @@ EOH
     port 8001
   end
 end
+
+include_recipe 'application_ruby_test::rails'
+include_recipe 'application_ruby_test::sinatra'
