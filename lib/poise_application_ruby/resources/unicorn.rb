@@ -82,7 +82,7 @@ module PoiseApplicationRuby
         # Set service resource options.
         def service_options(resource)
           super
-          resource.ruby_command("unicorn --listen #{new_resource.address}:#{new_resource.port} #{configru_path}")
+          resource.ruby_command("unicorn --host #{new_resource.address} --port #{new_resource.port} #{configru_path}")
         end
       end
     end
