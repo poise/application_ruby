@@ -245,6 +245,7 @@ end
 
 * `path` – Base path for the application. *(name attribute)*
 * `port` – Port to listen on. *(default: 80)*
+* `address` – Address to bind to. *(default: 0.0.0.0)*
 * `service_name` – Name of the service to create. *(default: auto-detect)*
 # `user` – User to run the service as. *(default: application owner)*
 
