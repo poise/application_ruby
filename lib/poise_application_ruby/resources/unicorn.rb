@@ -53,7 +53,7 @@ module PoiseApplicationRuby
         attribute(:port, kind_of: [String, Integer], default: 80)
         # @!attribute address
         #   Address to bind to.
-        attribute(:address, kind_of: [String, Integer], default: 0.0.0.0)
+        attribute(:address, kind_of: String, default: 0.0.0.0)
       end
 
       # Provider for `application_unicorn`.
