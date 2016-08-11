@@ -61,6 +61,7 @@ The `application_rackup` resource creates a service for `rackup`.
 application '/srv/myapp' do
   rackup do
     port 8000
+    host '0.0.0.0'
   end
 end
 ```
@@ -78,8 +79,9 @@ end
 
 * `path` – Base path for the application. *(name attribute)*
 * `port` – Port to listen on. *(default: 80)*
+* `host` – Host address to listen on. *(default: '127.0.0.1')*
 * `service_name` – Name of the service to create. *(default: auto-detect)*
-# `user` – User to run the service as. *(default: application owner)*
+* `user` – User to run the service as. *(default: application owner)*
 
 ### `application_rails`
 
