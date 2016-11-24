@@ -57,6 +57,7 @@ module PoiseApplicationRuby
             gem_environment = self_.send(:ruby_shell_out!, self_.new_resource.gem_binary, 'environment')
             matches = gem_environment.stdout.scan(/EXECUTABLE DIRECTORY: (.*)$/).first
             if matches
+              Chef::Log.debug("[#{new_resource}] Prepending gem executable directory #{matches.first} to existing $PATH (#{path})")
               path = "#{matches.first}:#{path}"
             end
             "#{self_.new_resource.ruby} #{PoiseLanguages::Utils.absolute_command(val, path: path)}"
