@@ -15,7 +15,10 @@ To deploy a Rails application from git:
 
 ```ruby
 application '/srv/myapp' do
-  git 'https://github.com/example/myapp.git'
+  git do
+    repository 'https://github.com/example/myapp.git'
+    revision 'master'
+  end
   bundle_install do
     deployment true
     without %w{development test}
