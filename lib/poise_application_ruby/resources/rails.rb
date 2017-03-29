@@ -140,7 +140,7 @@ module PoiseApplicationRuby
         #
         # @return [Symbol]
         def default_secrets_mode
-          ::File.exists?(::File.join(path, 'config', 'initializers', 'secret_token.rb')) ? :initialize : :yaml
+          ::File.exists?(::File.join(path, 'config', 'initializers', 'secret_token.rb')) ? :initializer : :yaml
         end
 
         # Default template variables for the secrets.yml.
