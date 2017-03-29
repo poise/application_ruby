@@ -53,6 +53,39 @@ end
 
 All actions and properties are the same as the [`bundle_install` resource](https://github.com/poise/poise-ruby#bundle_install).
 
+### `application_rack`
+
+The `application_rack` resource.
+
+```ruby
+application '/srv/myapp' do
+  rack do
+    dotenv do
+      zookeeper_dsn '127.0.0.1,127.0.1.1,127.0.2.1/corporate.com'
+    end
+    migrate true
+  end
+end
+```
+
+#### Actions
+
+* `:enable` – Create, enable and start the service. *(default)*
+* `:disable` – Stop, disable, and destroy the service.
+* `:start` – Start the service.
+* `:stop` – Stop the service.
+* `:restart` – Stop and then start the service.
+* `:reload` – Send the configured reload signal to the service.
+
+#### Properties
+
+* `path` – Base path for the application. *(name attribute)*
+* `dotenv` - Dotenv settings for Rack application.
+* `migrate` – Run database migrations. *(default: false)*
+* `rack_env` – Rack environment name. *(default: node.chef_environment)*
+* `service_name` – Name of the service to create. *(default: auto-detect)*
+# `user` – User to run the service as. *(default: application owner)*
+
 ### `application_rackup`
 
 The `application_rackup` resource creates a service for `rackup`.
