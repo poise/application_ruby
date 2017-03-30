@@ -47,6 +47,11 @@ module PoiseApplicationRuby
         provides(:application_rails)
         actions(:deploy)
 
+        # @!attribute app_module
+        #   Top-level application module. Only needed for the :initializer style
+        #   of secret token configuration, and generally auto-detected.
+        #   @return [String, false, nil]
+        attribute(:app_module, kind_of: [String, FalseClass, NilClass], default: lazy { default_app_module })
         # @!attribute database
         #   Option collector attribute for Rails database configuration.
         #   @return [Hash]
@@ -84,14 +89,20 @@ module PoiseApplicationRuby
         #   Secret token for Rails session verification and other purposes. On
         #   Rails 4.2 this will be used for secret_key_base. If not set, no
         #   secrets configuration is written.
-        #   @return [String]
-        attribute(:secret_token, kind_of: [String, FalseClass])
+        #   @return [String, false, nil]
+        attribute(:secret_token, kind_of: [String, FalseClass, NilClass])
         # @!attribute secrets_config
         #   Template content attribute for the contents of secrets.yml. Only
         #   used when secrets_mode is :yaml.
         #   @todo Redo this doc to cover the actual attributes created.
         #   @return [Poise::Helpers::TemplateContent]
         attribute(:secrets_config, template: true, default_source: 'secrets.yml.erb', default_options: lazy { default_secrets_options })
+        # @!attribute secrets_initializer
+        #   Template content attribute for the contents of secret_token.rb. Only
+        #   used when secrets_mode is :initializer.
+        #   @todo Redo this doc to cover the actual attributes created.
+        #   @return [Poise::Helpers::TemplateContent]
+        attribute(:secrets_initializer, template: true, default_source: 'secret_token.rb.erb', default_options: lazy { default_secrets_options })
         # @!attribute secrets_mode
         #   Secrets configuration mode. Set to `:yaml` to generate a Rails 4.2
         #   secrets.yml. Set to `:initializer` to update
@@ -143,17 +154,28 @@ module PoiseApplicationRuby
           ::File.exists?(::File.join(path, 'config', 'initializers', 'secret_token.rb')) ? :initializer : :yaml
         end
 
-        # Default template variables for the secrets.yml.
+        # Default template variables for the secrets.yml and secret_token.rb.
         #
         # @return [Hash<Symbol, Object>]
         def default_secrets_options
           {
-            config: {
+            yaml_config: {
               rails_env => {
                 'secret_key_base' => secret_token,
               }
             },
+            secret_token: secret_token,
+            app_name: if secrets_mode == :initializer
+              app_module || raise("Unable to extract app module for #{self}, please set app_module property")
+            end
           }
+        end
+
+        # Default application module name.
+        #
+        # @return [String]
+        def default_app_module
+          IO.read(::File.join(path, 'config', 'initializers', 'secret_token.rb'))[/(\w+)::Application.config.secret_token/, 1]
         end
       end
 
@@ -215,13 +237,19 @@ module PoiseApplicationRuby
             group new_resource.parent.group
             mode '640'
             content new_resource.secrets_config_content
+            sensitive true
           end
         end
 
         # In-place update a config/initializers/secret_token.rb file.
         def write_secrets_initializer
-          # @todo Implement initalizer-style secret support.
-          raise NotImplementedError.new('Sorry, intializer-style secrets loading is not yet supported.')
+          file ::File.join(new_resource.path, 'config', 'intializers', 'secret_token.rb') do
+            user new_resource.parent.owner
+            group new_resource.parent.group
+            mode '640'
+            content new_resource.secrets_initializer_content
+            sensitive true
+          end
         end
 
         # Precompile assets using the rake task.
