@@ -27,11 +27,13 @@ def dev_gem(name, path: File.join('..', name), github: nil)
   end
 end
 
-dev_gem 'halite'
+dev_gem 'halite', github: 'poise/halite'
 dev_gem 'poise'
 dev_gem 'poise-application', path: '../application'
-dev_gem 'poise-application-git', path: '../application_git'
-dev_gem 'poise-boiler'
+dev_gem 'poise-application-git', path: '../application_git', github: 'poise/application_git'
+dev_gem 'poise-boiler', githiub: 'poise/poise-boiler'
+dev_gem 'poise-build-essential', github: 'poise-build-essential'
+dev_gem 'poise-git'
 dev_gem 'poise-languages'
 dev_gem 'poise-profiler'
 dev_gem 'poise-ruby'
