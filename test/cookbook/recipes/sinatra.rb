@@ -14,7 +14,16 @@
 # limitations under the License.
 #
 
-name 'application_ruby_test'
-depends 'application_git'
-depends 'application_ruby'
-depends 'build-essential'
+include_recipe 'poise-build-essential'
+
+package value_for_platform_family(debian: 'ruby-dev', rhel: 'ruby-devel')
+
+application '/opt/test_sinatra' do
+  git 'https://github.com/poise/test_sinatra.git'
+  bundle_install do
+    deployment true
+  end
+  unicorn do
+    port 9000
+  end
+end

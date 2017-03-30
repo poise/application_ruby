@@ -17,7 +17,7 @@
 # RHEL 6 is too old to run Rails 4.2 on the system Ruby.
 return if platform_family?('rhel') && node['platform_version'].start_with?('6')
 
-include_recipe 'build-essential'
+include_recipe 'poise-build-essential'
 
 package value_for_platform_family(debian: 'ruby-dev', rhel: 'ruby-devel')
 package value_for_platform_family(debian: 'zlib1g-dev', rhel: 'zlib-devel')
