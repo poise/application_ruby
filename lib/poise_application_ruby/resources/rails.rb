@@ -176,7 +176,7 @@ module PoiseApplicationRuby
         #
         # @return [String]
         def default_app_module
-          IO.read(::File.join(path, 'config', 'initializers', 'secret_token.rb'))[/(\w+)::Application.config.secret_token/, 1]
+          IO.read(::File.join(path, 'config', 'initializers', 'secret_token.rb'))[/(\w+)::Application\.config\.secret_token/, 1]
         end
       end
 
