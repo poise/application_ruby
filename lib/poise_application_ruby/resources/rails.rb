@@ -243,7 +243,7 @@ module PoiseApplicationRuby
 
         # In-place update a config/initializers/secret_token.rb file.
         def write_secrets_initializer
-          file ::File.join(new_resource.path, 'config', 'intializers', 'secret_token.rb') do
+          file ::File.join(new_resource.path, 'config', 'initializers', 'secret_token.rb') do
             user new_resource.parent.owner
             group new_resource.parent.group
             mode '640'
