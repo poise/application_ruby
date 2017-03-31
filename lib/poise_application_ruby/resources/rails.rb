@@ -18,6 +18,7 @@ require 'chef/provider'
 require 'chef/resource'
 
 require 'poise_application_ruby/app_mixin'
+require 'poise_application_ruby/error'
 
 
 module PoiseApplicationRuby
@@ -227,6 +228,8 @@ module PoiseApplicationRuby
             write_secrets_yml
           when :initializer
             write_secrets_initializer
+          else
+            raise Error.new("Unknown secrets mode #{new_resource.secrets_mode.inspect}")
           end
         end
 
