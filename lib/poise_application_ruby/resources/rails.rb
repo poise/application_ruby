@@ -166,8 +166,8 @@ module PoiseApplicationRuby
               }
             },
             secret_token: secret_token,
-            app_name: if secrets_mode == :initializer
               app_module || raise("Unable to extract app module for #{self}, please set app_module property")
+            app_module: if secrets_mode == :initializer
             end
           }
         end
