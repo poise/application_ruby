@@ -41,7 +41,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'poise-ruby', '~> 2.1'
   spec.add_dependency 'poise-service', '~> 1.0'
 
-  spec.add_development_dependency 'poise-application-git', '~> 1.0'
+  spec.add_development_dependency 'poise-application-git', '~> 1.2'
   spec.add_development_dependency 'poise-boiler', '~> 1.15'
   spec.add_development_dependency 'poise-build-essential'
 end
