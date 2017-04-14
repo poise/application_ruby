@@ -53,6 +53,34 @@ end
 
 All actions and properties are the same as the [`bundle_install` resource](https://github.com/poise/poise-ruby#bundle_install).
 
+### `application_puma`
+
+The `application_puma` resource creates a service for `puma`.
+
+```ruby
+application '/srv/myapp' do
+  puma do
+    port 8000
+  end
+end
+```
+
+#### Actions
+
+* `:enable` – Create, enable and start the service. *(default)*
+* `:disable` – Stop, disable, and destroy the service.
+* `:start` – Start the service.
+* `:stop` – Stop the service.
+* `:restart` – Stop and then start the service.
+* `:reload` – Send the configured reload signal to the service.
+
+#### Properties
+
+* `path` – Base path for the application. *(name attribute)*
+* `port` – Port to listen on. *(default: 80)*
+* `service_name` – Name of the service to create. *(default: auto-detect)*
+* `user` – User to run the service as. *(default: application owner)*
+
 ### `application_rackup`
 
 The `application_rackup` resource creates a service for `rackup`.
@@ -102,6 +130,8 @@ end
 #### Properties
 
 * `path` – Base path for the application. *(name attribute)*
+* `app_module` – Top-level application module. Only needed for the :initializer
+  style of secret token configuration. *(default: auto-detect)*
 * `database` – Database settings for Rails. See [the database section
   below](#database-parameters) for more information. *(option collector)*
 * `migrate` – Run database migrations. *(default: false)*

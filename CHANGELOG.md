@@ -1,5 +1,11 @@
 # Application_Ruby Changelog
 
+## v4.1.0
+
+* Add an `application_puma` resource to run a Puma application server.
+* Add support for `:initializer` style secrets for the `application_rails` resource.
+* Chef 13 support.
+
 ## v4.0.1
 
 * Correct `gem_binary` results for `application_ruby`.
