@@ -30,7 +30,13 @@ describe PoiseApplicationRuby::Resources::RubyExecute do
   end
 
   it do
-    expect_any_instance_of(described_class::Provider).to receive(:shell_out!).with(
+    # Check which method to stub. I'm not super proud of this code, sorry.
+    method_to_stub = if IO.read(described_class::Provider.instance_method(:action_run).source_location.first) =~ /shell_out_with_systems_locale/
+      :shell_out_with_systems_locale!
+    else
+      :shell_out!
+    end
+    expect_any_instance_of(described_class::Provider).to receive(method_to_stub).with(
       '/ruby myapp.rb',
       user: 'myuser',
       group: 'mygroup',
