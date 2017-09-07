@@ -219,6 +219,7 @@ module PoiseApplicationRuby
             group new_resource.parent.group
             mode '640'
             content new_resource.database_config_content
+            sensitive true
           end
         end
 
