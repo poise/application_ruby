@@ -33,6 +33,7 @@ module PoiseApplicationRuby
         #   TCP port to listen on. Defaults to 80.
         #   @return [String, Integer]
         attribute(:port, kind_of: [String, Integer], default: 80)
+        attribute(:host, kind_of: [String], default: '127.0.0.1')
       end
 
       class Provider < Chef::Provider
@@ -59,7 +60,7 @@ module PoiseApplicationRuby
         # @return [void]
         def service_options(resource)
           super
-          resource.ruby_command("rackup --port #{new_resource.port}")
+          resource.ruby_command("rackup --port #{new_resource.port} --host #{new_resource.host}")
           resource.directory(::File.dirname(configru_path))
           # Older versions of rackup ignore all signals.
           resource.stop_signal('KILL')
