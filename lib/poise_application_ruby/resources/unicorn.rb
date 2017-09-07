@@ -51,6 +51,7 @@ module PoiseApplicationRuby
         # @!attribute port
         #   Port to bind to.
         attribute(:port, kind_of: [String, Integer], default: 80)
+        attribute(:config_path, kind_of: String)
       end
 
       # Provider for `application_unicorn`.
@@ -79,7 +80,10 @@ module PoiseApplicationRuby
         # Set service resource options.
         def service_options(resource)
           super
-          resource.ruby_command("unicorn --port #{new_resource.port} #{configru_path}")
+          cmd = "unicorn --port #{new_resource.port}"
+          cmd << " --config-file #{::File.expand_path(new_resource.config_path, new_resource.path)}" if new_resource.config_path
+          cmd << " #{configru_path}"
+          resource.ruby_command(cmd)
         end
       end
     end
