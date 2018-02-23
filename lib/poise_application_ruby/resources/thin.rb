@@ -31,6 +31,10 @@ module PoiseApplicationRuby
 
         attribute(:port, kind_of: [String, Integer], default: 80)
         attribute(:config_path, kind_of: String)
+
+        # @!attribute socket
+        #   Listen on a unix socket instead of a port
+        attribute(:socket, kind_of: [TrueClass, FalseClass], default: false)
       end
 
       class Provider < Chef::Provider
@@ -51,10 +55,21 @@ module PoiseApplicationRuby
           end
         end
 
+        # Path to the socket file.
+        #
+        # @return [String]
+        def socket_path
+          @socket_path ||= "unix:///var/run/#{::File.basename(new_resource.path)}.sock"
+        end
+
         # (see PoiseApplication::ServiceMixin#service_options)
         def service_options(resource)
           super
-          cmd = "thin --rackup #{configru_path} --port #{new_resource.port}"
+          unless new_resource.socket
+            cmd = "thin --rackup #{configru_path} --port #{new_resource.port}"
+          else
+            cmd = "thin --rackup #{configru_path} --socket #{socket_path}"
+          end
           cmd << " --config #{::File.expand_path(new_resource.config_path, new_resource.path)}" if new_resource.config_path
           resource.ruby_command(cmd)
         end
