@@ -51,6 +51,10 @@ module PoiseApplicationRuby
         # @!attribute port
         #   Port to bind to.
         attribute(:port, kind_of: [String, Integer], default: 80)
+
+        # @!attribute socket
+        #   Listen on a unix socket instead of a port
+        attribute(:socket, kind_of: [TrueClass, FalseClass], default: false)
       end
 
       # Provider for `application_unicorn`.
@@ -76,10 +80,21 @@ module PoiseApplicationRuby
           end
         end
 
+        # Path to the socket file.
+        #
+        # @return [String]
+        def socket_path
+          @socket_path ||= "unix:///var/run/#{::File.basename(new_resource.path)}.sock"
+        end
+
         # Set service resource options.
         def service_options(resource)
           super
-          resource.ruby_command("unicorn --port #{new_resource.port} #{configru_path}")
+          unless new_resource.socket
+            resource.ruby_command("unicorn --port #{new_resource.port} #{configru_path}")
+          else
+            resource.ruby_command("unicorn -l #{socket_path} #{configru_path}")
+          end
         end
       end
     end
