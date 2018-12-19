@@ -258,6 +258,8 @@ The `application_unicorn` resource creates a service for `unicorn`.
 application '/srv/myapp' do
   unicorn do
     port 8000
+    config_file '/srv/myapp/unicorn.cfg'
+    environment 'production'
   end
 end
 ```
@@ -277,6 +279,8 @@ end
 * `port` – Port to listen on. *(default: 80)*
 * `service_name` – Name of the service to create. *(default: auto-detect)*
 * `user` – User to run the service as. *(default: application owner)*
+* `config_file` - Unicorn configuration file to use. *(default: nil)*
+* `environment` - RACK_ENV to use. *(default: production)*
 
 ## Sponsors
 
